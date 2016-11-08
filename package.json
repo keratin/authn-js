@@ -1,0 +1,10 @@
+{
+  "name": "auth-js",
+  "version": "0.0.1",
+  "description": "Browser integration library for $CODENAME authentication service.",
+  "main": "index.js",
+  "author": "Lance Ivy",
+  "dependencies": {
+    "promise" : ""
+  }
+}
