@@ -7,17 +7,10 @@ interface Credentials {
   password: string
 }
 
-interface AuthAPI {
-  ISSUER: string,
-  inflight: boolean,
-  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>,
-  login(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>,
-}
-
 const AuthAPI = {
   ISSUER: '',
 
-  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
+  signup(credentials: Credentials): Promise.IThenable<string> {
     return new Promise((fulfill, reject) => {
       if (inflight) {
         reject("duplicate");
@@ -26,7 +19,7 @@ const AuthAPI = {
         inflight = true;
       }
 
-      post(accounts_url(), formData(credentials))
+      post(url('/accounts'), formData(credentials))
         .then(
           (result) => fulfill(result.id_token),
           (errors) => reject(errors)
@@ -36,33 +29,49 @@ const AuthAPI = {
     });
   },
 
-  login(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
-    return post(sessions_url(), formData(credentials))
+  isAvailable(username: string): Promise.IThenable<boolean> {
+    return get(url('/accounts/available'), formDataItem('username', username))
+      .then((result) => result.available);
+  },
+
+  login(credentials: Credentials): Promise.IThenable<string> {
+    return post(url('/sessions'), formData(credentials))
       .then((result) => result.id_token);
   },
 };
 
 export default AuthAPI;
 
-function accounts_url(): string {
+function url(path: string): string {
   if (!AuthAPI.ISSUER.length) {
     throw "AuthAPI.ISSUER not set";
   }
-  return `${AuthAPI.ISSUER}/accounts`;
-}
-
-function sessions_url(): string {
-  if (!AuthAPI.ISSUER.length) {
-    throw "AuthAPI.ISSUER not set";
-  }
-  return `${AuthAPI.ISSUER}/sessions`;
+  return `${AuthAPI.ISSUER}${path}`;
 }
 
 function formData(credentials: Credentials): string {
-  return `username=${encodeURIComponent(credentials.username)}&password=${encodeURIComponent(credentials.password)}`;
+  return `${formDataItem('username', credentials.username)}&${formDataItem('password', credentials.password)}`;
+}
+function formDataItem(k: string, v: string): string {
+  return `${k}=${encodeURIComponent(v)}`;
+}
+
+function get(url: string, queryString: string): Promise.IThenable<any> {
+  return jhr((xhr: XMLHttpRequest) => {
+    xhr.open("GET", `${url}?${queryString}`);
+    xhr.send();
+  });
 }
 
 function post(url: string, formData: string): Promise.IThenable<any> {
+  return jhr((xhr: XMLHttpRequest) => {
+    xhr.open("POST", url);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(formData);
+  });
+}
+
+function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise.IThenable<any> {
   return new Promise((fulfill, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
@@ -77,9 +86,7 @@ function post(url: string, formData: string): Promise.IThenable<any> {
         }
       }
     };
-    xhr.open("POST", url);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(formData);
+    sender(xhr);
   });
 }
 
