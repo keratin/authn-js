@@ -51,6 +51,7 @@ const AuthAPI = {
         }
       };
       xhr.open("POST", this.accounts_url());
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       xhr.send(formData);
     });
   }
