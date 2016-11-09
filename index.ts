@@ -28,16 +28,16 @@ export const AuthAPI = {
   signup: function signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
     const formData: string = `username=${encodeURIComponent(credentials.username)}&password=${encodeURIComponent(credentials.password)}`;
 
-    return new Promise(function (fulfill, reject) {
-      if (AuthAPI.inflight) {
+    return new Promise((fulfill, reject) => {
+      if (this.inflight) {
         reject("duplicate");
         return;
       } else {
-        AuthAPI.inflight = true;
+        this.inflight = true;
       }
 
       const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
+      xhr.onreadystatechange = () => {
         if (xhr.readyState == XMLHttpRequest.DONE) {
           const data = JSON.parse(xhr.responseText);
           if (data.result) {
@@ -47,10 +47,10 @@ export const AuthAPI = {
           } else {
             reject('unknown response from server');
           }
-          AuthAPI.inflight = false;
+          this.inflight = false;
         }
       };
-      xhr.open("POST", AuthAPI.accounts_url());
+      xhr.open("POST", this.accounts_url());
       xhr.send(formData);
     });
   }
