@@ -14,7 +14,7 @@ interface AuthAPI {
   signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>
 }
 
-export const AuthAPI = {
+const AuthAPI = {
   ISSUER: '',
   inflight: false,
 
@@ -55,3 +55,5 @@ export const AuthAPI = {
     });
   }
 };
+
+export default AuthAPI;
