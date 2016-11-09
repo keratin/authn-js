@@ -11,7 +11,10 @@ interface AuthAPI {
   ISSUER: string,
   inflight: boolean,
   accounts_url(this: AuthAPI): string,
+  sessions_url(this: AuthAPI): string,
+  formData(credentials: Credentials): string,
   signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>,
+  login(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>,
   post(url: string, formData: string): Promise.IThenable<any>
 }
 
@@ -26,9 +29,18 @@ const AuthAPI = {
     return `${this.ISSUER}/accounts`;
   },
 
-  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
-    const formData: string = `username=${encodeURIComponent(credentials.username)}&password=${encodeURIComponent(credentials.password)}`;
+  sessions_url(this: AuthAPI): string {
+    if (!this.ISSUER.length) {
+      throw "AuthAPI.ISSUER not set";
+    }
+    return `${this.ISSUER}/sessions`;
+  },
 
+  formData(credentials: Credentials): string {
+    return `username=${encodeURIComponent(credentials.username)}&password=${encodeURIComponent(credentials.password)}`;
+  },
+
+  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
     return new Promise((fulfill, reject) => {
       if (this.inflight) {
         reject("duplicate");
@@ -37,7 +49,7 @@ const AuthAPI = {
         this.inflight = true;
       }
 
-      this.post(this.accounts_url(), formData)
+      this.post(this.accounts_url(), this.formData(credentials))
         .then(
           (result) => fulfill(result.id_token),
           (errors) => reject(errors)
@@ -45,6 +57,11 @@ const AuthAPI = {
           () => this.inflight = false
         );
     });
+  },
+
+  login(this: AuthAPI, credentials: Credentials): Promise.IThenable<string> {
+    return this.post(this.sessions_url(), this.formData(credentials))
+      .then((result) => result.id_token);
   },
 
   post(url: string, formData: string): Promise.IThenable<any> {
