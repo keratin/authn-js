@@ -11,7 +11,8 @@ interface AuthAPI {
   ISSUER: string,
   inflight: boolean,
   accounts_url(this: AuthAPI): string,
-  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>
+  signup(this: AuthAPI, credentials: Credentials): Promise.IThenable<string>,
+  post(url: string, formData: string): Promise.IThenable<any>
 }
 
 const AuthAPI = {
@@ -36,21 +37,32 @@ const AuthAPI = {
         this.inflight = true;
       }
 
+      this.post(this.accounts_url(), formData)
+        .then(
+          (result) => fulfill(result.id_token),
+          (errors) => reject(errors)
+        ).then(
+          () => this.inflight = false
+        );
+    });
+  },
+
+  post(url: string, formData: string): Promise.IThenable<any> {
+    return new Promise((fulfill, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = () => {
         if (xhr.readyState == XMLHttpRequest.DONE) {
           const data = JSON.parse(xhr.responseText);
           if (data.result) {
-            fulfill(data.result.id_token);
+            fulfill(data.result);
           } else if (data.errors) {
             reject(data.errors);
           } else {
             reject('unknown response from server');
           }
-          this.inflight = false;
         }
       };
-      xhr.open("POST", this.accounts_url());
+      xhr.open("POST", url);
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       xhr.send(formData);
     });
