@@ -76,7 +76,7 @@ function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise.IThenable<any> {
     const xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState == XMLHttpRequest.DONE) {
-        const data = JSON.parse(xhr.responseText);
+        const data = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
         if (data.result) {
           fulfill(data.result);
         } else if (data.errors) {
