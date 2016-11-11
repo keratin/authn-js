@@ -34,13 +34,75 @@ const AuthAPI = {
       .then((result) => result.available);
   },
 
+  // If you are building a single-page app and can keep the session token in localStorage, use
+  // this function. If your system depends on cookies to maintain session, consider using
+  // AuthAPI.maintainSession() instead.
+  refresh(): Promise.IThenable<string> {
+    return get(url('/sessions/refresh'), '')
+      .then((result) => result.id_token);
+  },
+
   login(credentials: Credentials): Promise.IThenable<string> {
     return post(url('/sessions'), formData(credentials))
       .then((result) => result.id_token);
   },
+
+  // If your system depends on cookies to maintain session, this will keep them up to date. If you
+  // are building a single-page app and can keep the session token in localStorage, look instead at
+  // AuthAPI.refresh().
+  maintainSession(cookieName: string): void {
+    const jwt = readCookie(cookieName);
+    if (jwt) {
+      const claims = jwt_claims(jwt);
+      const halflife = (claims.exp - claims.iat) / 2;
+      const refreshAt = (claims.iat + halflife) * 1000; // in ms
+      const now = (new Date).getTime();
+
+      // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
+      // maintaining their session on pretty much every page load.
+      if (now < claims.iat || now >= refreshAt) {
+        refreshSession(cookieName);
+      } else {
+        setTimeout(
+          () => refreshSession(cookieName),
+          refreshAt - now
+        );
+      }
+    }
+  }
 };
 
 export default AuthAPI;
+
+function readCookie(cookieName: string): string | undefined {
+  return document.cookie.replace(`(?:(?:^|.*;\s*)${cookieName}\s*\=\s*([^;]*).*$)|^.*$`, "$1");
+}
+
+function refreshSession(cookieName: string) {
+  AuthAPI.refresh().then(
+    (id_token) => {
+      const secureFlag: string = (window.location.protocol === 'https:') ? '; secure' : ''
+      document.cookie = `${cookieName}=${id_token}${secureFlag}`;
+
+      const claims = jwt_claims(id_token);
+      const halflife = (claims.exp - claims.iat) / 2;
+      setTimeout(
+        () => refreshSession(cookieName),
+        halflife * 1000
+      );
+    }
+  );
+}
+
+// incomplete but good enough for my needs
+interface JWTClaims {
+  iat: number,
+  exp: number
+}
+
+function jwt_claims(jwt: string): JWTClaims {
+  return JSON.parse(atob(jwt.split('.')[1]));
+}
 
 function url(path: string): string {
   if (!AuthAPI.ISSUER.length) {
@@ -74,6 +136,7 @@ function post(url: string, formData: string): Promise.IThenable<any> {
 function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise.IThenable<any> {
   return new Promise((fulfill, reject) => {
     const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
       if (xhr.readyState == XMLHttpRequest.DONE) {
         const data = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
