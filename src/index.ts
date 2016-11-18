@@ -76,6 +76,10 @@ function readCookie(cookieName: string): string | undefined {
   return document.cookie.replace(`(?:(?:^|.*;\s*)${cookieName}\s*\=\s*([^;]*).*$)|^.*$`, "$1");
 }
 
+function deleteCookie(cookieName: string): void {
+  document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 function refreshSession(cookieName: string) {
   KeratinAuthN.refresh().then(
     (id_token) => {
@@ -88,6 +92,11 @@ function refreshSession(cookieName: string) {
         () => refreshSession(cookieName),
         halflife * 1000
       );
+    },
+    (error) => {
+      if (error === 'Unauthorized') {
+        deleteCookie(cookieName)
+      }
     }
   );
 }
@@ -143,7 +152,7 @@ function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise<any> {
         } else if (data.errors) {
           reject(data.errors);
         } else {
-          reject('unknown response from server');
+          reject(xhr.statusText);
         }
       }
     };
