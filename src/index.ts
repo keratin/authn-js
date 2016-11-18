@@ -1,7 +1,5 @@
 'use strict';
 
-import Promise = require('promise');
-
 interface Credentials {
   username: string,
   password: string
@@ -10,7 +8,7 @@ interface Credentials {
 const KeratinAuthN = {
   ISSUER: '',
 
-  signup(credentials: Credentials): Promise.IThenable<string> {
+  signup(credentials: Credentials): Promise<string> {
     return new Promise((fulfill, reject) => {
       if (inflight) {
         reject("duplicate");
@@ -29,7 +27,7 @@ const KeratinAuthN = {
     });
   },
 
-  isAvailable(username: string): Promise.IThenable<boolean> {
+  isAvailable(username: string): Promise<boolean> {
     return get(url('/accounts/available'), formDataItem('username', username))
       .then((result) => result.available);
   },
@@ -37,12 +35,12 @@ const KeratinAuthN = {
   // If you are building a single-page app and can keep the session token in localStorage, use
   // this function. If your system depends on cookies to maintain session, consider using
   // KeratinAuthN.maintainSession() instead.
-  refresh(): Promise.IThenable<string> {
+  refresh(): Promise<string> {
     return get(url('/sessions/refresh'), '')
       .then((result) => result.id_token);
   },
 
-  login(credentials: Credentials): Promise.IThenable<string> {
+  login(credentials: Credentials): Promise<string> {
     return post(url('/sessions'), formData(credentials))
       .then((result) => result.id_token);
   },
@@ -118,14 +116,14 @@ function formDataItem(k: string, v: string): string {
   return `${k}=${encodeURIComponent(v)}`;
 }
 
-function get(url: string, queryString: string): Promise.IThenable<any> {
+function get(url: string, queryString: string): Promise<any> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("GET", `${url}?${queryString}`);
     xhr.send();
   });
 }
 
-function post(url: string, formData: string): Promise.IThenable<any> {
+function post(url: string, formData: string): Promise<any> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("POST", url);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -133,7 +131,7 @@ function post(url: string, formData: string): Promise.IThenable<any> {
   });
 }
 
-function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise.IThenable<any> {
+function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise<any> {
   return new Promise((fulfill, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies

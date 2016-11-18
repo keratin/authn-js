@@ -6,7 +6,7 @@
   "author": "Lance Ivy",
   "license": "LGPL-3.0",
   "dependencies": {
-    "promise": ""
+    "@types/es6-promise": "^0.0.32"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
