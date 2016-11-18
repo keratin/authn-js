@@ -1,7 +1,7 @@
 {
-  "name": "auth-js",
+  "name": "keratin-authn",
   "version": "0.0.1",
-  "description": "Browser integration library for $CODENAME authentication service.",
+  "description": "Browser integration library for Keratin AuthN service.",
   "main": "index.js",
   "author": "Lance Ivy",
   "license": "LGPL-3.0",

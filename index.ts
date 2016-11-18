@@ -7,7 +7,7 @@ interface Credentials {
   password: string
 }
 
-const AuthAPI = {
+const KeratinAuthN = {
   ISSUER: '',
 
   signup(credentials: Credentials): Promise.IThenable<string> {
@@ -36,7 +36,7 @@ const AuthAPI = {
 
   // If you are building a single-page app and can keep the session token in localStorage, use
   // this function. If your system depends on cookies to maintain session, consider using
-  // AuthAPI.maintainSession() instead.
+  // KeratinAuthN.maintainSession() instead.
   refresh(): Promise.IThenable<string> {
     return get(url('/sessions/refresh'), '')
       .then((result) => result.id_token);
@@ -49,7 +49,7 @@ const AuthAPI = {
 
   // If your system depends on cookies to maintain session, this will keep them up to date. If you
   // are building a single-page app and can keep the session token in localStorage, look instead at
-  // AuthAPI.refresh().
+  // KeratinAuthN.refresh().
   maintainSession(cookieName: string): void {
     const jwt = readCookie(cookieName);
     if (jwt) {
@@ -72,14 +72,14 @@ const AuthAPI = {
   }
 };
 
-export default AuthAPI;
+export default KeratinAuthN;
 
 function readCookie(cookieName: string): string | undefined {
   return document.cookie.replace(`(?:(?:^|.*;\s*)${cookieName}\s*\=\s*([^;]*).*$)|^.*$`, "$1");
 }
 
 function refreshSession(cookieName: string) {
-  AuthAPI.refresh().then(
+  KeratinAuthN.refresh().then(
     (id_token) => {
       const secureFlag: string = (window.location.protocol === 'https:') ? '; secure' : ''
       document.cookie = `${cookieName}=${id_token}${secureFlag}`;
@@ -105,10 +105,10 @@ function jwt_claims(jwt: string): JWTClaims {
 }
 
 function url(path: string): string {
-  if (!AuthAPI.ISSUER.length) {
-    throw "AuthAPI.ISSUER not set";
+  if (!KeratinAuthN.ISSUER.length) {
+    throw "KeratinAuthN.ISSUER not set";
   }
-  return `${AuthAPI.ISSUER}${path}`;
+  return `${KeratinAuthN.ISSUER}${path}`;
 }
 
 function formData(credentials: Credentials): string {
