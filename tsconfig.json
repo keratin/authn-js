@@ -1,4 +1,7 @@
 {
+  "include": [
+    "./src/**/*.ts"
+  ],
   "compilerOptions": {
     "allowJs": true,
     "target": "es5",
