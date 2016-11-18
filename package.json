@@ -2,7 +2,7 @@
   "name": "keratin-authn",
   "version": "0.1.1",
   "description": "Browser integration library for Keratin AuthN service.",
-  "main": "./dist/index.js",
+  "main": "./dist/keratin-authn.js",
   "author": "Lance Ivy",
   "license": "LGPL-3.0",
   "dependencies": {
