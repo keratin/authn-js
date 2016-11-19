@@ -1,5 +1,7 @@
 'use strict';
 
+export default (function () {
+
 interface Credentials {
   username: string,
   password: string
@@ -49,56 +51,104 @@ const KeratinAuthN = {
   // are building a single-page app and can keep the session token in localStorage, look instead at
   // KeratinAuthN.refresh().
   maintainSession(cookieName: string): void {
-    const jwt = readCookie(cookieName);
-    if (jwt) {
-      const claims = jwt_claims(jwt);
-      const halflife = (claims.exp - claims.iat) / 2;
-      const refreshAt = (claims.iat + halflife) * 1000; // in ms
-      const now = (new Date).getTime();
-
-      // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
-      // maintaining their session on pretty much every page load.
-      if (now < claims.iat || now >= refreshAt) {
-        refreshSession(cookieName);
-      } else {
-        setTimeout(
-          () => refreshSession(cookieName),
-          refreshAt - now
-        );
-      }
+    const manager = new SessionManager(new CookieSessionStore(cookieName));
+    if (manager.session.token.length) {
+      manager.maintain();
     }
   }
 };
 
-export default KeratinAuthN;
+class Session {
+  readonly token: string;
+  readonly claims: JWTClaims;
 
-function readCookie(cookieName: string): string | undefined {
-  return document.cookie.replace(`(?:(?:^|.*;\s*)${cookieName}\s*\=\s*([^;]*).*$)|^.*$`, "$1");
+  constructor(token: string) {
+    this.token = token;
+    this.claims = jwt_claims(token);
+  }
+
+  iat(): number {
+    return this.claims.iat;
+  }
+
+  exp(): number {
+    return this.claims.exp;
+  }
+
+  halflife(): number {
+    return (this.exp() - this.iat()) / 2;
+  }
 }
 
-function deleteCookie(cookieName: string): void {
-  document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+interface SessionStore {
+  session: Session,
+  update(val: string): void,
+  delete(): void
 }
 
-function refreshSession(cookieName: string) {
-  KeratinAuthN.refresh().then(
-    (id_token) => {
-      const secureFlag: string = (window.location.protocol === 'https:') ? '; secure' : ''
-      document.cookie = `${cookieName}=${id_token}${secureFlag}`;
+class CookieSessionStore {
+  private readonly sessionName: string;
+  private readonly secureFlag: string;
+  session: Session;
 
-      const claims = jwt_claims(id_token);
-      const halflife = (claims.exp - claims.iat) / 2;
+  constructor(cookieName: string) {
+    this.sessionName = cookieName;
+    this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
+    this.session = new Session(
+      document.cookie.replace(`(?:(?:^|.*;\s*)${this.sessionName}\s*\=\s*([^;]*).*$)|^.*$`, "$1")
+    );
+  }
+
+  update(val: string) {
+    this.session = new Session(val);
+    document.cookie = `${this.sessionName}=${val}${this.secureFlag}`;
+  }
+
+  delete() {
+    document.cookie = this.sessionName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
+}
+
+class SessionManager {
+  private readonly store: SessionStore;
+
+  constructor(store: SessionStore) {
+    this.store = store;
+  }
+
+  get session(): Session {
+    return this.store.session;
+  }
+
+  maintain(): void {
+    const refreshAt = (this.session.iat() + this.session.halflife()) * 1000; // in ms
+    const now = (new Date).getTime();
+
+    // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
+    // maintaining their session on pretty much every page load.
+    if (now < this.session.iat() || now >= refreshAt) {
+      this.refresh();
+    } else {
       setTimeout(
-        () => refreshSession(cookieName),
-        halflife * 1000
+        () => this.refresh(),
+        refreshAt - now
       );
-    },
-    (error) => {
-      if (error === 'Unauthorized') {
-        deleteCookie(cookieName)
-      }
     }
-  );
+  }
+
+  private refresh(): void {
+    KeratinAuthN.refresh().then(
+      (id_token) => {
+        this.store.update(id_token);
+        setTimeout(this.refresh, this.session.halflife() * 1000);
+      },
+      (error) => {
+        if (error === 'Unauthorized') {
+          this.store.delete();
+        }
+      }
+    );
+  }
 }
 
 // incomplete but good enough for my needs
@@ -161,3 +211,6 @@ function jhr(sender: (xhr: XMLHttpRequest)=>void): Promise<any> {
 }
 
 let inflight: boolean = false;
+
+return KeratinAuthN;
+})();
