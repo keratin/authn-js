@@ -31,7 +31,6 @@ export class SessionManager {
     }
   }
 
-  // TODO: this leaks a timeout when it's called after maintain()
   updateAndMaintain(id_token: string): void {
     this.store.update(id_token);
     if (this.session) {
@@ -41,7 +40,7 @@ export class SessionManager {
 
   private scheduleRefresh(delay: number): void {
     clearTimeout(this.timeoutID);
-    this.timeoutID = setTimeout(this.refresh, delay);
+    this.timeoutID = setTimeout(() => this.refresh(), delay);
   }
 
   private sessionIsActive(): boolean {
@@ -50,7 +49,7 @@ export class SessionManager {
 
   private refresh(): void {
     refreshAPI().then(
-      this.updateAndMaintain,
+      (id_token) => this.updateAndMaintain(id_token),
       (error) => {
         if (error === 'Unauthorized') {
           this.store.delete();

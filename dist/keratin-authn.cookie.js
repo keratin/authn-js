@@ -162,7 +162,6 @@ var SessionManager = (function () {
             this.scheduleRefresh(refreshAt - now);
         }
     };
-    // TODO: this leaks a timeout when it's called after maintain()
     SessionManager.prototype.updateAndMaintain = function (id_token) {
         this.store.update(id_token);
         if (this.session) {
@@ -170,15 +169,16 @@ var SessionManager = (function () {
         }
     };
     SessionManager.prototype.scheduleRefresh = function (delay) {
+        var _this = this;
         clearTimeout(this.timeoutID);
-        this.timeoutID = setTimeout(this.refresh, delay);
+        this.timeoutID = setTimeout(function () { return _this.refresh(); }, delay);
     };
     SessionManager.prototype.sessionIsActive = function () {
         return !!this.session && this.session.token.length > 0;
     };
     SessionManager.prototype.refresh = function () {
         var _this = this;
-        api_1.refresh().then(this.updateAndMaintain, function (error) {
+        api_1.refresh().then(function (id_token) { return _this.updateAndMaintain(id_token); }, function (error) {
             if (error === 'Unauthorized') {
                 _this.store.delete();
             }
