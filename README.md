@@ -6,36 +6,76 @@ This library provides utilities to help integrate with AuthN from the browser. I
 
 [![npm](https://img.shields.io/npm/v/keratin-authn.svg)](https://www.npmjs.com/package/keratin-authn)
 
-## Installation
+## Installation && Usage
 
-KeratinAuthN requires global support for ES6 Promises. You can get a polyfill from https://github.com/stefanpenner/es6-promise.
+KeratinAuthN currently depends on [CORS support](http://caniuse.com/#search=cors). Future versions may add backwards compatibility, depending on demand.
 
-Once that is arranged, choose from:
+KeratinAuthN also requires global support for ES6 Promises. You can get a polyfill from https://github.com/stefanpenner/es6-promise.
 
-* `npm install es6-promise`
+### NPM or Yarn
+
+Fetch the node module from NPM:
+
+* `npm install keratin-authn`
 * `yarn add keratin-authn`
-* `bower install es6-promise`
-* or simply download and vendor [keratin-authn.js](https://raw.githubusercontent.com/keratin/authn-js/master/dist/keratin-authn.js)
 
-## Usage
+Then choose between the minimal API client:
 
-Configure the AuthN service location with something like:
+    ```javascript
+    // the minimal API client
+    var AuthN = require("keratin-authn.cookie");
 
-```html
-<script type="text/javascript">
-  KeratinAuthN.ISSUER = "https://authn.myapp.com"
-</script>
-```
+    AuthN.ISSUER = "https://authn.myapp.com";
+    ```
 
-Then use the following functions to integrate the AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
+or the opinionated API client with cookie-based session storage:
+
+    ```
+    var AuthN = require("keratin-authn");
+
+    // configuration
+    AuthN.ISSUER = "https://authn.myapp.com";
+    AuthN.setSession('authn');
+
+    // maintain any existing session
+    AuthN.maintainSession();
+    ```
+
+### Other
+
+Fetch one of the standalone distributions built with UMD: [keratin-authn.min.js](https://raw.githubusercontent.com/keratin/authn-js/master/dist/keratin-authn.min.js) or [keratin-authn.cookie.min.js](https://raw.githubusercontent.com/keratin/authn-js/master/dist/keratin-authn.cookie.min.js)
+
+Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.min.js` according to your vendoring process, then configure:
+
+    ```html
+    <script type="text/javascript">
+      KeratinAuthN.ISSUER = "https://authn.myapp.com"
+
+      // if you sourced keratin-authn.cookie:
+      KeratinAuthN.setSession('authn');
+      KeratinAuthN.maintainSession();
+    </script>
+    ```
+
+## API
+
+The following API methods are always available to integrate your AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
 
 * `KeratinAuthN.signup(username: string, password: string): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with field-specific validation failures.
 * `KeratinAuthN.login(username: string, password: string): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with generic validation failures.
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
-* `KeratinAuthN.maintainSession(cookieName: string): void`: if you store the ID Token in a cookie that may be read by JavaScript (e.g. not HTTPOnly), this will take care of updating the cookie before the token expires to maintain an uninterrupted session.
-* `KeratinAuthN.refresh(): Promise<string>`: if you store the ID Token in localStorage or something, you may implement a custom strategy with this API call.
+* `KeratinAuthN.refresh(): Promise<string>`: returns a Promise that is fulfilled with a fresh ID Token unless the user has been logged-out from AuthN
+
+If you have loaded `keratin-authn.cookie`, then:
+
+* `KeratinAuthN.signup()` and `KeratinAuthN.login()` will automatically set the ID Token as a cookie.
+* `KeratinAuthN.maintainSession(): void` will appropriately monitor and refresh the cookie before it expires. You should call this on each page load.
 
 ## Development
+
+Embrace the TypeScript!
+
+Tests are forthcoming. This library should not be considered production-ready until those exist.
 
 ## Contributing
 
