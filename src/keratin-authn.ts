@@ -30,8 +30,7 @@ const KeratinAuthN = {
   },
 
   isAvailable(username: string): Promise<boolean> {
-    return get(url('/accounts/available'), formDataItem('username', username))
-      .then((result) => result.available);
+    return get(url('/accounts/available'), formDataItem('username', username));
   },
 
   // If you are building a single-page app and can keep the session token in localStorage, use

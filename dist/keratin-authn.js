@@ -17,8 +17,7 @@ exports.default = (function () {
             });
         },
         isAvailable: function (username) {
-            return get(url('/accounts/available'), formDataItem('username', username))
-                .then(function (result) { return result.available; });
+            return get(url('/accounts/available'), formDataItem('username', username));
         },
         // If you are building a single-page app and can keep the session token in localStorage, use
         // this function. If your system depends on cookies to maintain session, consider using
