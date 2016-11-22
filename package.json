@@ -9,10 +9,13 @@
     "@types/es6-promise": "^0.0.32"
   },
   "devDependencies": {
+    "browserify": "^13.1.1",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^3.1.3",
     "gulp-uglify": "^2.0.0",
-    "typescript": "^2.0.10"
+    "tsify": "^2.0.3",
+    "typescript": "^2.0.10",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
