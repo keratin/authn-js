@@ -3,7 +3,11 @@ import { Credentials } from "./credentials";
 
 let inflight: boolean = false;
 
-export const ISSUER: string = '';
+let ISSUER: string = '';
+
+export function setHost(URL: string): void {
+  ISSUER = URL;
+}
 
 export function signup(credentials: Credentials): Promise<string> {
   return new Promise((fulfill, reject) => {

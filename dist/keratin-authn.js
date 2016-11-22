@@ -2,7 +2,11 @@
 "use strict";
 var verbs_1 = require("./verbs");
 var inflight = false;
-exports.ISSUER = '';
+var ISSUER = '';
+function setHost(URL) {
+    ISSUER = URL;
+}
+exports.setHost = setHost;
 function signup(credentials) {
     return new Promise(function (fulfill, reject) {
         if (inflight) {
@@ -32,10 +36,10 @@ function login(credentials) {
 }
 exports.login = login;
 function url(path) {
-    if (!exports.ISSUER.length) {
+    if (!ISSUER.length) {
         throw "ISSUER not set";
     }
-    return "" + exports.ISSUER + path;
+    return "" + ISSUER + path;
 }
 function formData(credentials) {
     return formDataItem('username', credentials.username) + "&" + formDataItem('password', credentials.password);
