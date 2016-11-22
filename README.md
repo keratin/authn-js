@@ -23,7 +23,7 @@ Then choose between the minimal API client:
 
     ```javascript
     // the minimal API client
-    var AuthN = require("keratin-authn.cookie");
+    var AuthN = require("keratin-authn");
 
     AuthN.setHost("https://authn.myapp.com");
     ```
@@ -31,7 +31,7 @@ Then choose between the minimal API client:
 or the opinionated API client with cookie-based session storage:
 
     ```
-    var AuthN = require("keratin-authn");
+    var AuthN = require("keratin-authn/dist/keratin-authn.cookie");
 
     // configuration
     AuthN.setHost("https://authn.myapp.com");
