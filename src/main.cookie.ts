@@ -7,9 +7,12 @@ import { signup as signupAPI, login as loginAPI } from "./api";
 const unconfigured: string = "AuthN must be configured with setSession()";
 
 let store: SessionStore|undefined;
+let manager: SessionManager;
 
 export function setSessionName(cookieName: string): void {
   store = new CookieSessionStore(cookieName);
+  manager = new SessionManager(store);
+  manager.maintain();
 }
 
 export function signup(credentials: Credentials): Promise<string> {
@@ -22,16 +25,11 @@ export function login(credentials: Credentials): Promise<string> {
     .then(updateAndReturn);
 }
 
-export function maintainSession(): void {
-  if (!store) { throw unconfigured }
-  (new SessionManager(store)).maintain();
-}
-
 // export remaining API methods unmodified
 export * from "./api";
 
 function updateAndReturn(token: string) {
-  if (!store) { throw unconfigured };
-  store.update(token);
+  if (!manager) { throw unconfigured };
+  manager.updateAndMaintain(token);
   return token;
 }

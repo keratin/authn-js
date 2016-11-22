@@ -36,9 +36,6 @@ or the opinionated API client with cookie-based session storage:
     // configuration
     AuthN.setHost("https://authn.myapp.com");
     AuthN.setSessionName('authn');
-
-    // maintain any existing session
-    AuthN.maintainSession();
     ```
 
 ### Other
@@ -53,7 +50,6 @@ Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.mi
 
       // if you sourced keratin-authn.cookie:
       KeratinAuthN.setSessionName('authn');
-      KeratinAuthN.maintainSession();
     </script>
     ```
 
@@ -69,7 +65,7 @@ The following API methods are always available to integrate your AuthN service (
 If you have loaded `keratin-authn.cookie`, then:
 
 * `KeratinAuthN.signup()` and `KeratinAuthN.login()` will automatically set the ID Token as a cookie.
-* `KeratinAuthN.maintainSession(): void` will appropriately monitor and refresh the cookie before it expires. You should call this on each page load.
+* `KeratinAuthN.setSessionName(name: string): void` will configure the cookie name and automatically begin monitoring and refreshing the cookie before it expires. You should call this on each page load.
 
 ## Development
 

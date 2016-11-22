@@ -4,6 +4,7 @@ import { refresh as refreshAPI } from "./api";
 
 export class SessionManager {
   private readonly store: SessionStore;
+  private timeoutID: number;
 
   constructor(store: SessionStore) {
     this.store = store;
@@ -11,11 +12,6 @@ export class SessionManager {
 
   get session(): Session | undefined {
     return this.store.session;
-  }
-
-  sessionIsActive(): boolean {
-    if (!this.session) { return false }
-    return this.session.token.length > 0;
   }
 
   maintain(): void {
@@ -31,21 +27,30 @@ export class SessionManager {
     if (now < this.session.iat() || now >= refreshAt) {
       this.refresh();
     } else {
-      setTimeout(
-        () => this.refresh(),
-        refreshAt - now
-      );
+      this.scheduleRefresh(refreshAt - now);
     }
+  }
+
+  // TODO: this leaks a timeout when it's called after maintain()
+  updateAndMaintain(id_token: string): void {
+    this.store.update(id_token);
+    if (this.session) {
+      this.scheduleRefresh(this.session.halflife() * 1000);
+    }
+  }
+
+  private scheduleRefresh(delay: number): void {
+    clearTimeout(this.timeoutID);
+    this.timeoutID = setTimeout(this.refresh, delay);
+  }
+
+  private sessionIsActive(): boolean {
+    return !!this.session && this.session.token.length > 0;
   }
 
   private refresh(): void {
     refreshAPI().then(
-      (id_token) => {
-        this.store.update(id_token);
-        if (this.session) {
-          setTimeout(this.refresh, this.session.halflife() * 1000);
-        }
-      },
+      this.updateAndMaintain,
       (error) => {
         if (error === 'Unauthorized') {
           this.store.delete();

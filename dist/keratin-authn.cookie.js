@@ -82,8 +82,11 @@ var cookie_store_1 = require("./cookie_store");
 var api_1 = require("./api");
 var unconfigured = "AuthN must be configured with setSession()";
 var store;
+var manager;
 function setSessionName(cookieName) {
     store = new cookie_store_1.CookieSessionStore(cookieName);
+    manager = new session_manager_1.SessionManager(store);
+    manager.maintain();
 }
 exports.setSessionName = setSessionName;
 function signup(credentials) {
@@ -96,21 +99,14 @@ function login(credentials) {
         .then(updateAndReturn);
 }
 exports.login = login;
-function maintainSession() {
-    if (!store) {
-        throw unconfigured;
-    }
-    (new session_manager_1.SessionManager(store)).maintain();
-}
-exports.maintainSession = maintainSession;
 // export remaining API methods unmodified
 __export(require("./api"));
 function updateAndReturn(token) {
-    if (!store) {
+    if (!manager) {
         throw unconfigured;
     }
     ;
-    store.update(token);
+    manager.updateAndMaintain(token);
     return token;
 }
 
@@ -151,14 +147,7 @@ var SessionManager = (function () {
         enumerable: true,
         configurable: true
     });
-    SessionManager.prototype.sessionIsActive = function () {
-        if (!this.session) {
-            return false;
-        }
-        return this.session.token.length > 0;
-    };
     SessionManager.prototype.maintain = function () {
-        var _this = this;
         if (!this.session || !this.sessionIsActive()) {
             return;
         }
@@ -170,17 +159,26 @@ var SessionManager = (function () {
             this.refresh();
         }
         else {
-            setTimeout(function () { return _this.refresh(); }, refreshAt - now);
+            this.scheduleRefresh(refreshAt - now);
         }
+    };
+    // TODO: this leaks a timeout when it's called after maintain()
+    SessionManager.prototype.updateAndMaintain = function (id_token) {
+        this.store.update(id_token);
+        if (this.session) {
+            this.scheduleRefresh(this.session.halflife() * 1000);
+        }
+    };
+    SessionManager.prototype.scheduleRefresh = function (delay) {
+        clearTimeout(this.timeoutID);
+        this.timeoutID = setTimeout(this.refresh, delay);
+    };
+    SessionManager.prototype.sessionIsActive = function () {
+        return !!this.session && this.session.token.length > 0;
     };
     SessionManager.prototype.refresh = function () {
         var _this = this;
-        api_1.refresh().then(function (id_token) {
-            _this.store.update(id_token);
-            if (_this.session) {
-                setTimeout(_this.refresh, _this.session.halflife() * 1000);
-            }
-        }, function (error) {
+        api_1.refresh().then(this.updateAndMaintain, function (error) {
             if (error === 'Unauthorized') {
                 _this.store.delete();
             }
