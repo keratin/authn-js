@@ -55,13 +55,17 @@ var CookieSessionStore = (function () {
     function CookieSessionStore(cookieName) {
         this.sessionName = cookieName;
         this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
-        this.session = new session_1.Session(document.cookie.replace("(?:(?:^|.*;s*)" + this.sessionName + "s*=s*([^;]*).*$)|^.*$", "$1"));
+        var current = document.cookie.replace("(?:(?:^|.*;s*)" + this.sessionName + "s*=s*([^;]*).*$)|^.*$", "$1");
+        if (current) {
+            this.session = new session_1.Session(current);
+        }
     }
     CookieSessionStore.prototype.update = function (val) {
         this.session = new session_1.Session(val);
         document.cookie = this.sessionName + "=" + val + this.secureFlag;
     };
     CookieSessionStore.prototype.delete = function () {
+        this.session = undefined;
         document.cookie = this.sessionName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     };
     return CookieSessionStore;
@@ -148,11 +152,14 @@ var SessionManager = (function () {
         configurable: true
     });
     SessionManager.prototype.sessionIsActive = function () {
+        if (!this.session) {
+            return false;
+        }
         return this.session.token.length > 0;
     };
     SessionManager.prototype.maintain = function () {
         var _this = this;
-        if (!this.sessionIsActive()) {
+        if (!this.session || !this.sessionIsActive()) {
             return;
         }
         var refreshAt = (this.session.iat() + this.session.halflife()) * 1000; // in ms
@@ -170,7 +177,9 @@ var SessionManager = (function () {
         var _this = this;
         api_1.refresh().then(function (id_token) {
             _this.store.update(id_token);
-            setTimeout(_this.refresh, _this.session.halflife() * 1000);
+            if (_this.session) {
+                setTimeout(_this.refresh, _this.session.halflife() * 1000);
+            }
         }, function (error) {
             if (error === 'Unauthorized') {
                 _this.store.delete();

@@ -9,16 +9,17 @@ export class SessionManager {
     this.store = store;
   }
 
-  get session(): Session {
+  get session(): Session | undefined {
     return this.store.session;
   }
 
   sessionIsActive(): boolean {
+    if (!this.session) { return false }
     return this.session.token.length > 0;
   }
 
   maintain(): void {
-    if (!this.sessionIsActive()) {
+    if (!this.session || !this.sessionIsActive()) {
       return;
     }
 
@@ -41,7 +42,9 @@ export class SessionManager {
     refreshAPI().then(
       (id_token) => {
         this.store.update(id_token);
-        setTimeout(this.refresh, this.session.halflife() * 1000);
+        if (this.session) {
+          setTimeout(this.refresh, this.session.halflife() * 1000);
+        }
       },
       (error) => {
         if (error === 'Unauthorized') {
