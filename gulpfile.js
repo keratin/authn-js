@@ -9,7 +9,8 @@ var uglify = require('gulp-uglify');
 gulp.task('default', function() {
   return browserify({
       basedir: '.',
-      entries: ['src/keratin-authn.ts']
+      entries: ['src/api.ts'],
+      standalone: 'KeratinAuthN'
     })
     .plugin(tsify)
     .bundle()
