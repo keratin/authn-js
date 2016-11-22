@@ -35,7 +35,7 @@ or the opinionated API client with cookie-based session storage:
 
     // configuration
     AuthN.setHost("https://authn.myapp.com");
-    AuthN.setSession('authn');
+    AuthN.setSessionName('authn');
 
     // maintain any existing session
     AuthN.maintainSession();
@@ -52,7 +52,7 @@ Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.mi
       KeratinAuthN.setHost("https://authn.myapp.com");
 
       // if you sourced keratin-authn.cookie:
-      KeratinAuthN.setSession('authn');
+      KeratinAuthN.setSessionName('authn');
       KeratinAuthN.maintainSession();
     </script>
     ```

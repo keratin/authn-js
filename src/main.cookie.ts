@@ -8,7 +8,7 @@ const unconfigured: string = "AuthN must be configured with setSession()";
 
 let store: SessionStore|undefined;
 
-export function setSession(cookieName: string): void {
+export function setSessionName(cookieName: string): void {
   store = new CookieSessionStore(cookieName);
 }
 

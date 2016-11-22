@@ -78,10 +78,10 @@ var cookie_store_1 = require("./cookie_store");
 var api_1 = require("./api");
 var unconfigured = "AuthN must be configured with setSession()";
 var store;
-function setSession(cookieName) {
+function setSessionName(cookieName) {
     store = new cookie_store_1.CookieSessionStore(cookieName);
 }
-exports.setSession = setSession;
+exports.setSessionName = setSessionName;
 function signup(credentials) {
     return api_1.signup(credentials)
         .then(updateAndReturn);
