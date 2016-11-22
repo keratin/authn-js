@@ -1,6 +1,6 @@
 {
   "include": [
-    "./src/keratin-authn.ts"
+    "./src/*.ts"
   ],
   "compilerOptions": {
     "allowJs": true,

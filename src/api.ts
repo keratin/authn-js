@@ -1,9 +1,5 @@
 import { get, post } from "./verbs";
-
-interface Credentials {
-  username: string,
-  password: string
-}
+import { Credentials } from "./credentials";
 
 let inflight: boolean = false;
 
