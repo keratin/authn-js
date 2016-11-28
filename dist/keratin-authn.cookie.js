@@ -35,6 +35,22 @@ function login(credentials) {
         .then(function (result) { return result.id_token; });
 }
 exports.login = login;
+function logout() {
+    return new Promise(function (fulfill) {
+        var iframe = document.createElement('iframe');
+        iframe.onload = function () {
+            iframe.remove();
+            fulfill();
+        };
+        iframe.src = url('/sessions/logout');
+        var style = iframe.style;
+        style.height = '0';
+        style.width = '0';
+        style.border = '0';
+        document.querySelector('body').appendChild(iframe);
+    });
+}
+exports.logout = logout;
 function url(path) {
     if (!ISSUER.length) {
         throw "ISSUER not set";
@@ -99,6 +115,17 @@ function login(credentials) {
         .then(updateAndReturn);
 }
 exports.login = login;
+function logout() {
+    return api_1.logout()
+        .then(function () {
+        if (!store) {
+            throw unconfigured;
+        }
+        ;
+        store.delete();
+    });
+}
+exports.logout = logout;
 // export remaining API methods unmodified
 __export(require("./api"));
 function updateAndReturn(token) {

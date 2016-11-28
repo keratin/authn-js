@@ -2,7 +2,7 @@ import { SessionStore } from "./session_store";
 import { SessionManager } from "./session_manager";
 import { CookieSessionStore } from "./cookie_store";
 import { Credentials } from "./credentials";
-import { signup as signupAPI, login as loginAPI } from "./api";
+import { signup as signupAPI, login as loginAPI, logout as logoutAPI } from "./api";
 
 const unconfigured: string = "AuthN must be configured with setSession()";
 
@@ -23,6 +23,14 @@ export function signup(credentials: Credentials): Promise<string> {
 export function login(credentials: Credentials): Promise<string> {
   return loginAPI(credentials)
     .then(updateAndReturn);
+}
+
+export function logout(): Promise<void> {
+  return logoutAPI()
+    .then(() => {
+      if (!store) { throw unconfigured };
+      store.delete();
+    });
 }
 
 // export remaining API methods unmodified

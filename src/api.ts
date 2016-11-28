@@ -42,6 +42,24 @@ export function login(credentials: Credentials): Promise<string> {
     .then((result) => result.id_token);
 }
 
+export function logout(): Promise<{}> {
+  return new Promise(function(fulfill) {
+    let iframe = document.createElement('iframe');
+    iframe.onload = () => {
+      iframe.remove();
+      fulfill();
+    };
+    iframe.src = url('/sessions/logout');
+
+    const style = iframe.style;
+    style.height = '0';
+    style.width = '0';
+    style.border = '0';
+
+    document.querySelector('body').appendChild(iframe);
+  });
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";
