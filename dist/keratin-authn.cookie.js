@@ -175,7 +175,7 @@ var SessionManager = (function () {
         configurable: true
     });
     SessionManager.prototype.maintain = function () {
-        if (!this.session || !this.sessionIsActive()) {
+        if (!this.session) {
             return;
         }
         var refreshAt = (this.session.iat() + this.session.halflife()) * 1000; // in ms
@@ -199,9 +199,6 @@ var SessionManager = (function () {
         var _this = this;
         clearTimeout(this.timeoutID);
         this.timeoutID = setTimeout(function () { return _this.refresh(); }, delay);
-    };
-    SessionManager.prototype.sessionIsActive = function () {
-        return !!this.session && this.session.token.length > 0;
     };
     SessionManager.prototype.refresh = function () {
         var _this = this;

@@ -15,7 +15,7 @@ export class SessionManager {
   }
 
   maintain(): void {
-    if (!this.session || !this.sessionIsActive()) {
+    if (!this.session) {
       return;
     }
 
@@ -41,10 +41,6 @@ export class SessionManager {
   private scheduleRefresh(delay: number): void {
     clearTimeout(this.timeoutID);
     this.timeoutID = setTimeout(() => this.refresh(), delay);
-  }
-
-  private sessionIsActive(): boolean {
-    return !!this.session && this.session.token.length > 0;
   }
 
   private refresh(): void {
