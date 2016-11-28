@@ -6,7 +6,7 @@ let inflight: boolean = false;
 let ISSUER: string = '';
 
 export function setHost(URL: string): void {
-  ISSUER = URL;
+  ISSUER = URL.replace(/\/$/, '');
 }
 
 export function signup(credentials: Credentials): Promise<string> {

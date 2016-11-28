@@ -4,7 +4,7 @@ var verbs_1 = require("./verbs");
 var inflight = false;
 var ISSUER = '';
 function setHost(URL) {
-    ISSUER = URL;
+    ISSUER = URL.replace(/\/$/, '');
 }
 exports.setHost = setHost;
 function signup(credentials) {
