@@ -21,22 +21,22 @@ Fetch the node module from NPM:
 
 Then choose between the minimal API client:
 
-    ```javascript
-    // the minimal API client
-    var AuthN = require("keratin-authn");
+```javascript
+// the minimal API client
+var AuthN = require("keratin-authn");
 
-    AuthN.setHost("https://authn.myapp.com");
-    ```
+AuthN.setHost("https://authn.myapp.com");
+```
 
 or the opinionated API client with cookie-based session storage:
 
-    ```
-    var AuthN = require("keratin-authn/dist/keratin-authn.cookie");
+```javascript
+var AuthN = require("keratin-authn/dist/keratin-authn.cookie");
 
-    // configuration
-    AuthN.setHost("https://authn.myapp.com");
-    AuthN.setSessionName('authn');
-    ```
+// configuration
+AuthN.setHost("https://authn.myapp.com");
+AuthN.setSessionName('authn');
+```
 
 ### Other
 
@@ -44,14 +44,14 @@ Fetch one of the standalone distributions built with UMD: [keratin-authn.min.js]
 
 Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.min.js` according to your vendoring process, then configure:
 
-    ```html
-    <script type="text/javascript">
-      KeratinAuthN.setHost("https://authn.myapp.com");
+```html
+<script type="text/javascript">
+  KeratinAuthN.setHost("https://authn.myapp.com");
 
-      // if you sourced keratin-authn.cookie:
-      KeratinAuthN.setSessionName('authn');
-    </script>
-    ```
+  // if you sourced keratin-authn.cookie:
+  KeratinAuthN.setSessionName('authn');
+</script>
+```
 
 ## API
 
