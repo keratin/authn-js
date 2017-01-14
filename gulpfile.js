@@ -5,6 +5,7 @@ var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
 var tsify = require("tsify");
 var uglify = require('gulp-uglify');
+var qunit = require('gulp-qunit');
 
 function build(extension) {
   let src = extension ? `src/main.${extension}.ts` : `src/main.ts`;
@@ -34,3 +35,8 @@ gulp.task('build-cookie', function() {
 });
 
 gulp.task('default', ['build-core', 'build-cookie']);
+
+gulp.task('test', ['build-core', 'build-cookie'], function () {
+  return gulp.src('./test/runner.html')
+    .pipe(qunit());
+});
