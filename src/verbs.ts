@@ -1,13 +1,13 @@
 import { formData, FormData } from "./form_data";
 
-export function get(url: string, data: FormData): Promise<any> {
+export function get<T>(url: string, data: FormData): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("GET", `${url}?${formData(data)}`);
     xhr.send();
   });
 }
 
-export function post(url: string, data: FormData): Promise<any> {
+export function post<T>(url: string, data: FormData): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("POST", url);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -15,7 +15,7 @@ export function post(url: string, data: FormData): Promise<any> {
   });
 }
 
-function jhr(sender: (xhr: XMLHttpRequest) => void): Promise<any> {
+function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
   return new Promise((fulfill, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies

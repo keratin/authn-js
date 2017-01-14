@@ -9,6 +9,13 @@ export function setHost(URL: string): void {
   ISSUER = URL.replace(/\/$/, '');
 }
 
+interface TokenResponse{
+  id_token: string;
+}
+
+interface EmptyResponse{
+}
+
 export function signup(credentials: Credentials): Promise<string> {
   return new Promise((fulfill, reject) => {
     if (inflight) {
@@ -18,7 +25,7 @@ export function signup(credentials: Credentials): Promise<string> {
       inflight = true;
     }
 
-    post(url('/accounts'), credentials)
+    post<TokenResponse>(url('/accounts'), credentials)
       .then(
         (result) => fulfill(result.id_token),
         (errors) => reject(errors)
@@ -29,20 +36,20 @@ export function signup(credentials: Credentials): Promise<string> {
 }
 
 export function isAvailable(username: string): Promise<boolean> {
-  return get(url('/accounts/available'), {username});
+  return get<boolean>(url('/accounts/available'), {username});
 }
 
 export function refresh(): Promise<string> {
-  return get(url('/sessions/refresh'), {})
+  return get<TokenResponse>(url('/sessions/refresh'), {})
     .then((result) => result.id_token);
 }
 
 export function login(credentials: Credentials): Promise<string> {
-  return post(url('/sessions'), credentials)
+  return post<TokenResponse>(url('/sessions'), credentials)
     .then((result) => result.id_token);
 }
 
-export function logout(): Promise<{}> {
+export function logout(): Promise<EmptyResponse> {
   return new Promise(function(fulfill) {
     let iframe = document.createElement('iframe');
     iframe.onload = () => {
