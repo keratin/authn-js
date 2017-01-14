@@ -1,6 +1,6 @@
 import { SessionManager } from "./session_manager";
 import { CookieSessionStore } from "./cookie_store";
-import { signup as signupAPI, login as loginAPI, logout as logoutAPI } from "./api";
+import { signup as signupAPI, login as loginAPI, logout as logoutAPI, resetPassword as resetPasswordAPI } from "./api";
 
 const unconfigured: string = "AuthN must be configured with setSession()";
 
@@ -29,6 +29,11 @@ export function logout(): Promise<void> {
       if (!store) { throw unconfigured };
       store.delete();
     });
+}
+
+export function resetPassword(args: PasswordResetArgs): Promise<string> {
+  return resetPasswordAPI(args)
+    .then(updateAndReturn);
 }
 
 export function session(): Session|undefined {
