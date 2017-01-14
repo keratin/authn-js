@@ -16,22 +16,22 @@ function signup(credentials) {
         else {
             inflight = true;
         }
-        verbs_1.post(url('/accounts'), formData(credentials))
+        verbs_1.post(url('/accounts'), credentials)
             .then(function (result) { return fulfill(result.id_token); }, function (errors) { return reject(errors); }).then(function () { return inflight = false; });
     });
 }
 exports.signup = signup;
 function isAvailable(username) {
-    return verbs_1.get(url('/accounts/available'), formDataItem('username', username));
+    return verbs_1.get(url('/accounts/available'), { username: username });
 }
 exports.isAvailable = isAvailable;
 function refresh() {
-    return verbs_1.get(url('/sessions/refresh'), '')
+    return verbs_1.get(url('/sessions/refresh'), {})
         .then(function (result) { return result.id_token; });
 }
 exports.refresh = refresh;
 function login(credentials) {
-    return verbs_1.post(url('/sessions'), formData(credentials))
+    return verbs_1.post(url('/sessions'), credentials)
         .then(function (result) { return result.id_token; });
 }
 exports.login = login;
@@ -57,34 +57,42 @@ function url(path) {
     }
     return "" + ISSUER + path;
 }
-function formData(credentials) {
-    return formDataItem('username', credentials.username) + "&" + formDataItem('password', credentials.password);
+
+},{"./verbs":4}],2:[function(require,module,exports){
+"use strict";
+// takes a simple map, returns a string
+function formData(data) {
+    return Object.keys(data)
+        .map(function (k) { return formDataItem(k, data[k]); })
+        .join('&');
 }
+exports.formData = formData;
 function formDataItem(k, v) {
     return k + "=" + encodeURIComponent(v);
 }
 
-},{"./verbs":3}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require("./api"));
 
-},{"./api":1}],3:[function(require,module,exports){
+},{"./api":1}],4:[function(require,module,exports){
 "use strict";
-function get(url, queryString) {
+var form_data_1 = require("./form_data");
+function get(url, data) {
     return jhr(function (xhr) {
-        xhr.open("GET", url + "?" + queryString);
+        xhr.open("GET", url + "?" + form_data_1.formData(data));
         xhr.send();
     });
 }
 exports.get = get;
-function post(url, formData) {
+function post(url, data) {
     return jhr(function (xhr) {
         xhr.open("POST", url);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send(formData);
+        xhr.send(form_data_1.formData(data));
     });
 }
 exports.post = post;
@@ -110,5 +118,5 @@ function jhr(sender) {
     });
 }
 
-},{}]},{},[2])(2)
+},{"./form_data":2}]},{},[3])(3)
 });

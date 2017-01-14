@@ -16,22 +16,22 @@ function signup(credentials) {
         else {
             inflight = true;
         }
-        verbs_1.post(url('/accounts'), formData(credentials))
+        verbs_1.post(url('/accounts'), credentials)
             .then(function (result) { return fulfill(result.id_token); }, function (errors) { return reject(errors); }).then(function () { return inflight = false; });
     });
 }
 exports.signup = signup;
 function isAvailable(username) {
-    return verbs_1.get(url('/accounts/available'), formDataItem('username', username));
+    return verbs_1.get(url('/accounts/available'), { username: username });
 }
 exports.isAvailable = isAvailable;
 function refresh() {
-    return verbs_1.get(url('/sessions/refresh'), '')
+    return verbs_1.get(url('/sessions/refresh'), {})
         .then(function (result) { return result.id_token; });
 }
 exports.refresh = refresh;
 function login(credentials) {
-    return verbs_1.post(url('/sessions'), formData(credentials))
+    return verbs_1.post(url('/sessions'), credentials)
         .then(function (result) { return result.id_token; });
 }
 exports.login = login;
@@ -57,14 +57,8 @@ function url(path) {
     }
     return "" + ISSUER + path;
 }
-function formData(credentials) {
-    return formDataItem('username', credentials.username) + "&" + formDataItem('password', credentials.password);
-}
-function formDataItem(k, v) {
-    return k + "=" + encodeURIComponent(v);
-}
 
-},{"./verbs":6}],2:[function(require,module,exports){
+},{"./verbs":7}],2:[function(require,module,exports){
 "use strict";
 var session_1 = require("./session");
 var CookieSessionStore = (function () {
@@ -88,7 +82,20 @@ var CookieSessionStore = (function () {
 }());
 exports.CookieSessionStore = CookieSessionStore;
 
-},{"./session":4}],3:[function(require,module,exports){
+},{"./session":5}],3:[function(require,module,exports){
+"use strict";
+// takes a simple map, returns a string
+function formData(data) {
+    return Object.keys(data)
+        .map(function (k) { return formDataItem(k, data[k]); })
+        .join('&');
+}
+exports.formData = formData;
+function formDataItem(k, v) {
+    return k + "=" + encodeURIComponent(v);
+}
+
+},{}],4:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -137,7 +144,7 @@ function updateAndReturn(token) {
     return token;
 }
 
-},{"./api":1,"./cookie_store":2,"./session_manager":5}],4:[function(require,module,exports){
+},{"./api":1,"./cookie_store":2,"./session_manager":6}],5:[function(require,module,exports){
 "use strict";
 var Session = (function () {
     function Session(token) {
@@ -160,7 +167,7 @@ function jwt_claims(jwt) {
     return JSON.parse(atob(jwt.split('.')[1]));
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 var api_1 = require("./api");
 var SessionManager = (function () {
@@ -212,20 +219,21 @@ var SessionManager = (function () {
 }());
 exports.SessionManager = SessionManager;
 
-},{"./api":1}],6:[function(require,module,exports){
+},{"./api":1}],7:[function(require,module,exports){
 "use strict";
-function get(url, queryString) {
+var form_data_1 = require("./form_data");
+function get(url, data) {
     return jhr(function (xhr) {
-        xhr.open("GET", url + "?" + queryString);
+        xhr.open("GET", url + "?" + form_data_1.formData(data));
         xhr.send();
     });
 }
 exports.get = get;
-function post(url, formData) {
+function post(url, data) {
     return jhr(function (xhr) {
         xhr.open("POST", url);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send(formData);
+        xhr.send(form_data_1.formData(data));
     });
 }
 exports.post = post;
@@ -251,5 +259,5 @@ function jhr(sender) {
     });
 }
 
-},{}]},{},[3])(3)
+},{"./form_data":3}]},{},[4])(4)
 });
