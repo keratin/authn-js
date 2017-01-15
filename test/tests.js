@@ -75,7 +75,6 @@ QUnit.test("success", function(assert) {
       }
     });
 });
-
 QUnit.test("failure", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
     jsonErrors({foo: 'bar'})
@@ -89,7 +88,6 @@ QUnit.test("failure", function(assert) {
       assert.equal(errors[0].message, 'bar', 'error has message');
     });
 });
-
 QUnit.test("double submit", function(assert) {
   var done = assert.async(2);
 
@@ -118,13 +116,11 @@ QUnit.test("no existing session", function(assert) {
   KeratinAuthN.setSessionName('authn');
   assert.notOk(KeratinAuthN.session(), "no session");
 });
-
 QUnit.test("existing session", function(assert) {
   writeCookie('authn', idToken({age: 1}));
   KeratinAuthN.setSessionName('authn');
   assert.ok(KeratinAuthN.session(), "session found");
 });
-
 QUnit.test("aging session", function(assert) {
   var done = assert.async();
   var oldSession = idToken({age: 3000});
