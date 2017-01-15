@@ -31,6 +31,10 @@ export function logout(): Promise<void> {
     });
 }
 
+export function session(): Session|undefined {
+  return (store) ? store.session : undefined;
+}
+
 // export remaining API methods unmodified
 export * from "./api";
 

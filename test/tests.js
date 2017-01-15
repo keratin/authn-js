@@ -3,13 +3,8 @@ QUnit.begin(function () {
   KeratinAuthN.setSessionName('authn');
 });
 
-QUnit.module("api", {
-  beforeEach: function () {
-    this.server = sinon.fakeServer.create({respondImmediately: true});
-  },
-  afterEach: function () {
-    this.server.restore();
-  }
+QUnit.testDone(function () {
+  deleteCookie('authn');
 });
 
 function jwt(payload) {
@@ -20,7 +15,7 @@ function jwt(payload) {
          btoa(signature);
 }
 
-function id_token(options) {
+function idToken(options) {
   var age = options.age || 600;
   var iat = Math.floor(Date.now() / 1000) - age;
   return jwt({
@@ -30,32 +25,60 @@ function id_token(options) {
   });
 }
 
-function json_result(data) {
+function jsonResult(data) {
   return JSON.stringify({result: data});
 }
 
-function json_error(data) {
+function jsonErrors(data) {
   var errors = Object.keys(data)
     .map(function(k){ return {field: k, message: data[k]} });
 
   return JSON.stringify({errors: errors})
 }
 
-QUnit.test("signup success", function(assert) {
+function readCookie(name) {
+  return document.cookie.replace(new RegExp('/(?:(?:^|.*;\s*)' + name + '\s*\=\s*([^;]*).*$)|^.*$'), "$1");
+}
+
+function writeCookie(name, val) {
+  document.cookie = name + '=' + val + ';';
+}
+
+function deleteCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+var startServer = {
+  beforeEach: function () {
+    this.server = sinon.fakeServer.create({respondImmediately: true});
+  },
+  afterEach: function () {
+    this.server.restore();
+  }
+};
+
+QUnit.module("api signup", startServer);
+QUnit.test("success", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
-    json_result({id_token: id_token({age: 1})})
+    jsonResult({id_token: idToken({age: 1})})
   );
 
   return KeratinAuthN.signup({username: 'test', password: 'test'})
     .then(function (token) {
       assert.ok(token.length > 0, "token is a string of some length");
       assert.equal(token.split('.').length, 3, "token has three parts");
+
+      // NOTE: this test will fail when qunit is run in a browser with the
+      //       `file:///` protocol
+      if (window.location.protocol != 'file:') {
+        assert.equal(readCookie('authn'), token, "token is saved as cookie");
+      }
     });
 });
 
-QUnit.test("signup failure", function(assert) {
+QUnit.test("failure", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
-    json_error({foo: 'bar'})
+    jsonErrors({foo: 'bar'})
   );
 
   return KeratinAuthN.signup({username: 'test', password: 'test'})
@@ -67,12 +90,12 @@ QUnit.test("signup failure", function(assert) {
     });
 });
 
-QUnit.test("signup duplicate", function(assert) {
+QUnit.test("double submit", function(assert) {
   var done = assert.async(2);
 
   this.server.respondImmediately = false;
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
-    json_result({id_token: id_token({age: 1})})
+    jsonResult({id_token: idToken({age: 1})})
   );
 
   KeratinAuthN.signup({username: 'test', password: 'test'})
@@ -89,8 +112,38 @@ QUnit.test("signup duplicate", function(assert) {
   this.server.respond();
 });
 
+QUnit.module("setSessionName", startServer);
+QUnit.test("no existing session", function(assert) {
+  deleteCookie('authn');
+  KeratinAuthN.setSessionName('authn');
+  assert.notOk(KeratinAuthN.session(), "no session");
+});
+
+QUnit.test("existing session", function(assert) {
+  writeCookie('authn', idToken({age: 1}));
+  KeratinAuthN.setSessionName('authn');
+  assert.ok(KeratinAuthN.session(), "session found");
+});
+
+QUnit.test("aging session", function(assert) {
+  var done = assert.async();
+  var oldSession = idToken({age: 3000});
+  var newSession = idToken({age: 1});
+
+  this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh',
+    jsonResult({id_token: newSession})
+  );
+
+  writeCookie('authn', oldSession);
+  KeratinAuthN.setSessionName('authn');
+  assert.equal(KeratinAuthN.session().token, oldSession, "session found is old");
+  setTimeout(function () {
+    assert.equal(KeratinAuthN.session().token, newSession, "session is updated");
+    done();
+  }, 10);
+});
+
 // isAvailable()
 // refresh()
 // login()
 // logout()
-// setSessionName() [with fresh session, with aging session]

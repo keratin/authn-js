@@ -2,7 +2,7 @@ import { formData, FormData } from "./form_data";
 
 export function get<T>(url: string, data: FormData): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
-    xhr.open("GET", `${url}?${formData(data)}`);
+    xhr.open("GET", `${url}?${formData(data)}`.replace(/\?$/, ''));
     xhr.send();
   });
 }
