@@ -110,6 +110,30 @@ QUnit.test("double submit", function(assert) {
   this.server.respond();
 });
 
+QUnit.module("isAvailable", startServer);
+QUnit.test("name is not taken", function(assert) {
+  this.server.respondWith('GET', 'https://authn.example.com/accounts/available?username=test',
+    jsonResult(true)
+  );
+
+  return KeratinAuthN.isAvailable('test')
+    .then(function (availability) {
+      assert.ok(availability, "is available");
+    });
+});
+QUnit.test("name is taken", function(assert) {
+  this.server.respondWith('GET', 'https://authn.example.com/accounts/available?username=test',
+    jsonErrors({username: 'TAKEN'})
+  );
+
+  return KeratinAuthN.isAvailable('test')
+    .catch(function (errors) {
+      assert.equal(errors.length, 1, "one error");
+      assert.equal(errors[0].field, 'username', 'error has field');
+      assert.equal(errors[0].message, 'TAKEN', 'error has message');
+    });
+});
+
 QUnit.module("setSessionName", startServer);
 QUnit.test("no existing session", function(assert) {
   deleteCookie('authn');
@@ -139,7 +163,6 @@ QUnit.test("aging session", function(assert) {
   }, 10);
 });
 
-// isAvailable()
 // refresh()
 // login()
 // logout()
