@@ -57,7 +57,7 @@ var startServer = {
   }
 };
 
-QUnit.module("api signup", startServer);
+QUnit.module("signup", startServer);
 QUnit.test("success", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
     jsonResult({id_token: idToken({age: 1})})
@@ -163,6 +163,37 @@ QUnit.test("aging session", function(assert) {
   }, 10);
 });
 
+QUnit.module("login", startServer);
+QUnit.test("success", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/sessions',
+    jsonResult({id_token: idToken({age: 1})})
+  );
+
+  return KeratinAuthN.login({username: 'test', password: 'test'})
+    .then(function (token) {
+      assert.ok(token.length > 0, "token is a string of some length");
+      assert.equal(token.split('.').length, 3, "token has three parts");
+
+      // NOTE: this test will fail when qunit is run in a browser with the
+      //       `file:///` protocol
+      if (window.location.protocol != 'file:') {
+        assert.equal(readCookie('authn'), token, "token is saved as cookie");
+      }
+    });
+});
+QUnit.test("failure", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/sessions',
+    jsonErrors({foo: 'bar'})
+  );
+
+  return KeratinAuthN.login({username: 'test', password: 'test'})
+    .then(function (data) { assert.ok(false, "should not succeed") })
+    .catch(function (errors) {
+      assert.equal(errors.length, 1, "one error");
+      assert.equal(errors[0].field, 'foo', 'error has field');
+      assert.equal(errors[0].message, 'bar', 'error has message');
+    });
+});
+
 // refresh()
-// login()
 // logout()
