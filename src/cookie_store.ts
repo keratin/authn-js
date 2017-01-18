@@ -9,7 +9,7 @@ export class CookieSessionStore implements SessionStore {
     this.sessionName = cookieName;
     this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
 
-    const current = document.cookie.replace(`(?:(?:^|.*;\s*)${this.sessionName}\s*\=\s*([^;]*).*$)|^.*$`, "$1")
+    const current = document.cookie.replace(new RegExp(`(?:(?:^|.*;\s*)${this.sessionName}\s*\=\s*([^;]*).*$)|^.*$`), "$1");
     if (current) {
       this.session = new Session(current);
     }

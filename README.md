@@ -73,7 +73,9 @@ If you have loaded `keratin-authn.cookie`, then:
 
 Embrace the TypeScript!
 
-Tests are forthcoming. This library should not be considered production-ready until those exist.
+Run tests with `gulp test`.
+
+You can also load and run tests in a browser, but you'll need to serve them on a domain (not `file:///`) so that cookies function properly. The quickest method is `python -m SimpleHTTPServer`, then opening `localhost:8000/test/runner.html` in your browser.
 
 ## Contributing
 
