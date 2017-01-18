@@ -73,7 +73,7 @@ If you have loaded `keratin-authn.cookie`, then:
 
 Embrace the TypeScript!
 
-Tests are forthcoming. This library should not be considered production-ready until those exist.
+Run tests with `gulp test`.
 
 ## Contributing
 
