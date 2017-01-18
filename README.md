@@ -75,6 +75,8 @@ Embrace the TypeScript!
 
 Run tests with `gulp test`.
 
+You can also load and run tests in a browser, but you'll need to serve them on a domain (not `file:///`) so that cookies function properly. The quickest method is `python -m SimpleHTTPServer`, then opening `localhost:8000/test/runner.html` in your browser.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/keratin/authn-js. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
