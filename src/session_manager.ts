@@ -1,5 +1,4 @@
 import { Session } from "./session";
-import { SessionStore } from "./session_store";
 import { refresh as refreshAPI } from "./api";
 
 export class SessionManager {

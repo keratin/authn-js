@@ -1,5 +1,4 @@
 import { Session } from "./session";
-import { SessionStore } from "./session_store";
 
 export class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;

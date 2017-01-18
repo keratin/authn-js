@@ -1,7 +1,5 @@
-import { SessionStore } from "./session_store";
 import { SessionManager } from "./session_manager";
 import { CookieSessionStore } from "./cookie_store";
-import { Credentials } from "./credentials";
 import { signup as signupAPI, login as loginAPI, logout as logoutAPI } from "./api";
 
 const unconfigured: string = "AuthN must be configured with setSession()";

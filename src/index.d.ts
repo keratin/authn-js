@@ -1,10 +1,10 @@
-declare interface Credentials {
+interface Credentials {
   [index: string]: string;
   username: string;
   password: string;
 }
 
-declare interface JWTClaims {
+interface JWTClaims {
   iss: string,
   aud: string,
   sub: number,
@@ -12,9 +12,17 @@ declare interface JWTClaims {
   exp: number
 }
 
-import { Session } from "./session";
+declare class Session {
+  readonly token: string;
+  readonly claims: JWTClaims;
 
-export interface SessionStore {
+  constructor(token: string);
+  iat(): number;
+  exp(): number;
+  halflife(): number;
+}
+
+interface SessionStore {
   session: Session | undefined,
   update(val: string): void,
   delete(): void
