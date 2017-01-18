@@ -1,6 +1,8 @@
 QUnit.begin(function () {
   KeratinAuthN.setHost('https://authn.example.com');
   KeratinAuthN.setSessionName('authn');
+  writeCookie('hello', 'world');
+  writeCookie('foo', 'bar');
 });
 
 QUnit.testDone(function () {
@@ -37,7 +39,7 @@ function jsonErrors(data) {
 }
 
 function readCookie(name) {
-  return document.cookie.replace(new RegExp('/(?:(?:^|.*;\s*)' + name + '\s*\=\s*([^;]*).*$)|^.*$'), "$1");
+  return document.cookie.replace(new RegExp('(?:(?:^|.*;\\\s*)' + name + '\\\s*\\\=\\\s*([^;]*).*$)|^.*$'), "$1");
 }
 
 function writeCookie(name, val) {
