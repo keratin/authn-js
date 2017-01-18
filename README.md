@@ -40,7 +40,7 @@ AuthN.setSessionName('authn');
 
 ### Other
 
-Fetch one of the standalone distributions built with UMD: [keratin-authn.min.js](https://raw.githubusercontent.com/keratin/authn-js/master/dist/keratin-authn.min.js) or [keratin-authn.cookie.min.js](https://raw.githubusercontent.com/keratin/authn-js/master/dist/keratin-authn.cookie.min.js)
+Fetch one of the standalone distributions built with UMD: [keratin-authn.min.js](https://unpkg.com/keratin-authn/dist/keratin-authn.min.js) or [keratin-authn.cookie.min.js](https://unpkg.com/keratin-authn/dist/keratin-authn.cookie.min.js)
 
 Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.min.js` according to your vendoring process, then configure:
 
