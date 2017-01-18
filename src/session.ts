@@ -1,5 +1,3 @@
-import { JWTClaims } from "./jwt_claims";
-
 export class Session {
   readonly token: string;
   readonly claims: JWTClaims;
