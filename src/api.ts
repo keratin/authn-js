@@ -66,6 +66,15 @@ export function logout(): Promise<EmptyResponse> {
   });
 }
 
+export function requestPasswordReset(username: string): Promise<EmptyResponse> {
+  return get(url('/password/edit'), {username});
+}
+
+export function resetPassword(args: PasswordResetArgs): Promise<string> {
+  return post<TokenResponse>(url('/password'), args)
+    .then((result) => result.id_token);
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";

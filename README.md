@@ -62,11 +62,13 @@ The following API methods are always available to integrate your AuthN service (
 * `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. You are still responsible for discarding the app session.
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
 * `KeratinAuthN.refresh(): Promise<string>`: returns a Promise that is fulfilled with a fresh ID Token unless the user has been logged-out from AuthN
+* `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
+* `KeratinAuthN.resetPassword(password: string, resetToken: string): Promise<string>`: returns a Promise that is fulfilled when the password has been reset for the account identified by the authorizing token. May error from password validations.
 
 If you have loaded `keratin-authn.cookie`, then:
 
 * `KeratinAuthN.setSessionName(name: string): void` will configure the cookie name and automatically begin monitoring and refreshing the cookie before it expires. You should call this on each page load.
-* `KeratinAuthN.signup()` and `KeratinAuthN.login()` will automatically set the ID Token as a cookie.
+* `KeratinAuthN.signup()`, `KeratinAuthN.login()`, and `KeratinAuthN.resetPassword()` will automatically set the ID Token as a cookie.
 * `KeratinAuthN.logout()` will automatically delete the ID Token cookie.
 
 ## Development
