@@ -57,13 +57,13 @@ Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.mi
 
 The following API methods are always available to integrate your AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
 
-* `KeratinAuthN.signup(username: string, password: string): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with field-specific validation failures.
-* `KeratinAuthN.login(username: string, password: string): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with generic validation failures.
+* `KeratinAuthN.signup(obj: {username: string, password: string}): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with field-specific validation failures.
+* `KeratinAuthN.login(obj: {username: string, password: string}): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with generic validation failures.
 * `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. You are still responsible for discarding the app session.
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
 * `KeratinAuthN.refresh(): Promise<string>`: returns a Promise that is fulfilled with a fresh ID Token unless the user has been logged-out from AuthN
 * `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
-* `KeratinAuthN.resetPassword(password: string, resetToken: string): Promise<string>`: returns a Promise that is fulfilled when the password has been reset for the account identified by the authorizing token. May error from password validations.
+* `KeratinAuthN.resetPassword(obj: {password: string, resetToken: string}): Promise<string>`: returns a Promise that is fulfilled when the password has been reset for the account identified by the authorizing token. May error from password validations.
 
 If you have loaded `keratin-authn.cookie`, then:
 
