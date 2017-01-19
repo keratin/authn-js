@@ -67,7 +67,7 @@ export function logout(): Promise<EmptyResponse> {
 }
 
 export function requestPasswordReset(username: string): Promise<EmptyResponse> {
-  return get(url('/password/edit'), {username});
+  return get(url('/password/reset'), {username});
 }
 
 export function resetPassword(args: PasswordResetArgs): Promise<string> {

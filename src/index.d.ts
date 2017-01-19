@@ -31,5 +31,5 @@ interface SessionStore {
 interface PasswordResetArgs {
   [index: string]: string;
   password: string;
-  resetToken: string;
+  token: string;
 }

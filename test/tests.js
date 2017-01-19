@@ -202,7 +202,7 @@ QUnit.test("failure", function(assert) {
 
 QUnit.module("requestPasswordReset", startServer);
 QUnit.test("success or failure", function(assert) {
-  this.server.respondWith('GET', 'https://authn.example.com/password/edit?username=test', '');
+  this.server.respondWith('GET', 'https://authn.example.com/password/reset?username=test', '');
 
   return KeratinAuthN.requestPasswordReset('test')
     .then(function () {
@@ -218,7 +218,7 @@ QUnit.test("success", function(assert) {
 
   return KeratinAuthN.resetPassword({
       password: 'new',
-      resetToken: jwt({foo: 'bar'})
+      token: jwt({foo: 'bar'})
     })
     .then(function (token) {
       assert.ok(token.length > 0, "token is a string of some length");
@@ -238,7 +238,7 @@ QUnit.test("failure", function(assert) {
 
   return KeratinAuthN.resetPassword({
       password: 'new',
-      resetToken: jwt({foo: 'bar'})
+      token: jwt({foo: 'bar'})
     })
     .then(rejectSuccess(assert))
     .catch(assertErrors(assert));
