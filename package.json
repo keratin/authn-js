@@ -5,8 +5,7 @@
   "main": "./dist/keratin-authn.js",
   "author": "Lance Ivy",
   "license": "LGPL-3.0",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/es6-promise": "^0.0.32",
     "browserify": "^13.1.1",
@@ -14,9 +13,13 @@
     "gulp-qunit": "^1.5.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.0.0",
-    "tsify": "^2.0.3",
     "typescript": "^2.0.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "scripts": {
+    "build": "gulp",
+    "test": "gulp test",
+    "compile": "gulp compile"
   }
 }

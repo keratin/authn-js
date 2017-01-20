@@ -6,7 +6,6 @@
     "declaration": true,
     "declarationDir": "./lib",
     "outDir": "./lib",
-
     "target": "es5",
     "noImplicitAny": true,
     "strictNullChecks": true,
