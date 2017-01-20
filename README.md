@@ -63,12 +63,12 @@ The following API methods are always available to integrate your AuthN service (
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
 * `KeratinAuthN.refresh(): Promise<string>`: returns a Promise that is fulfilled with a fresh ID Token unless the user has been logged-out from AuthN
 * `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
-* `KeratinAuthN.resetPassword(obj: {password: string, token: string}): Promise<string>`: returns a Promise that is fulfilled when the password has been reset for the account identified by the authorizing token (previously delivered to app as a result of `requestPasswordReset`. May error with password validations, or invalid/expired tokens.
+* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<string>`: returns a Promise that is fulfilled when the password has been reset. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. May error with password validations, or invalid/expired tokens.
 
 If you have loaded `keratin-authn.cookie`, then:
 
 * `KeratinAuthN.setSessionName(name: string): void` will configure the cookie name and automatically begin monitoring and refreshing the cookie before it expires. You should call this on each page load.
-* `KeratinAuthN.signup()`, `KeratinAuthN.login()`, and `KeratinAuthN.resetPassword()` will automatically set the ID Token as a cookie.
+* `KeratinAuthN.signup()`, `KeratinAuthN.login()`, and `KeratinAuthN.changePassword()` will automatically set the ID Token as a cookie.
 * `KeratinAuthN.logout()` will automatically delete the ID Token cookie.
 
 ## Development
