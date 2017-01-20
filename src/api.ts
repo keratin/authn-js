@@ -12,9 +12,6 @@ interface TokenResponse{
   id_token: string;
 }
 
-interface EmptyResponse{
-}
-
 export function signup(credentials: Credentials): Promise<string> {
   return new Promise((fulfill, reject) => {
     if (inflight) {
@@ -48,7 +45,7 @@ export function login(credentials: Credentials): Promise<string> {
     .then((result) => result.id_token);
 }
 
-export function logout(): Promise<EmptyResponse> {
+export function logout(): Promise<{}> {
   return new Promise(function(fulfill) {
     let iframe = document.createElement('iframe');
     iframe.onload = () => {
@@ -66,7 +63,7 @@ export function logout(): Promise<EmptyResponse> {
   });
 }
 
-export function requestPasswordReset(username: string): Promise<EmptyResponse> {
+export function requestPasswordReset(username: string): Promise<{}> {
   return get(url('/password/reset'), {username});
 }
 

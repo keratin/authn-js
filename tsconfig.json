@@ -1,9 +1,12 @@
 {
   "include": [
-    "./src/*.ts"
+    "./src/*"
   ],
   "compilerOptions": {
-    "allowJs": true,
+    "declaration": true,
+    "declarationDir": "./lib",
+    "outDir": "./lib",
+
     "target": "es5",
     "noImplicitAny": true,
     "strictNullChecks": true,
