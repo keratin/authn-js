@@ -1,14 +1,17 @@
 export interface FormData {
-  [index: string]: string;
+  [index: string]: string | undefined;
 }
 
 // takes a simple map, returns a string
 export function formData(data: FormData): string {
   return Object.keys(data)
     .map((k) => formDataItem(k, data[k]))
+    .filter((str) => str !== undefined)
     .join('&');
 }
 
-function formDataItem(k: string, v: string): string {
-  return `${k}=${encodeURIComponent(v)}`;
+function formDataItem(k: string, v: string | undefined): string | undefined {
+  if (typeof v !== "undefined") {
+    return `${k}=${encodeURIComponent(v)}`;
+  }
 }

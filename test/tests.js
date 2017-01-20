@@ -50,6 +50,17 @@ function deleteCookie(name) {
   document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+function assertInstalledToken(assertions) {
+  return function (token) {
+    assertions.ok(token.length > 0, "token is a string of some length");
+    assertions.equal(token.split('.').length, 3, "token has three parts");
+
+    // NOTE: this test will fail when qunit is run in a browser with the
+    //       `file:///` protocol
+    assertions.equal(readCookie('authn'), token, "token is saved as cookie");
+  }
+}
+
 function assertErrors(assertions) {
   return function (errors) {
     assertions.equal(errors.length, 1, "one error");
@@ -58,7 +69,7 @@ function assertErrors(assertions) {
   };
 }
 
-function rejectSuccess(assertions) {
+function refuteSuccess(assertions) {
   return function (data) {
     assertions.notOk(true, "should not succeed");
   }
@@ -80,16 +91,7 @@ QUnit.test("success", function(assert) {
   );
 
   return KeratinAuthN.signup({username: 'test', password: 'test'})
-    .then(function (token) {
-      assert.ok(token.length > 0, "token is a string of some length");
-      assert.equal(token.split('.').length, 3, "token has three parts");
-
-      // NOTE: this test will fail when qunit is run in a browser with the
-      //       `file:///` protocol
-      if (window.location.protocol != 'file:') {
-        assert.equal(readCookie('authn'), token, "token is saved as cookie");
-      }
-    });
+    .then(assertInstalledToken(assert));
 });
 QUnit.test("failure", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/accounts',
@@ -97,7 +99,7 @@ QUnit.test("failure", function(assert) {
   );
 
   return KeratinAuthN.signup({username: 'test', password: 'test'})
-    .then(rejectSuccess(assert))
+    .then(refuteSuccess(assert))
     .catch(assertErrors(assert));
 });
 QUnit.test("double submit", function(assert) {
@@ -113,7 +115,7 @@ QUnit.test("double submit", function(assert) {
     .then(done);
 
   KeratinAuthN.signup({username: 'test', password: 'test'})
-    .then(rejectSuccess(assert))
+    .then(refuteSuccess(assert))
     .catch(function(errors) {
       assert.equal(errors, "duplicate", "caught duplicate request");
       done();
@@ -139,7 +141,7 @@ QUnit.test("name is taken", function(assert) {
   );
 
   return KeratinAuthN.isAvailable('test')
-    .then(rejectSuccess(assert))
+    .then(refuteSuccess(assert))
     .catch(assertErrors(assert));
 });
 
@@ -179,16 +181,7 @@ QUnit.test("success", function(assert) {
   );
 
   return KeratinAuthN.login({username: 'test', password: 'test'})
-    .then(function (token) {
-      assert.ok(token.length > 0, "token is a string of some length");
-      assert.equal(token.split('.').length, 3, "token has three parts");
-
-      // NOTE: this test will fail when qunit is run in a browser with the
-      //       `file:///` protocol
-      if (window.location.protocol != 'file:') {
-        assert.equal(readCookie('authn'), token, "token is saved as cookie");
-      }
-    });
+    .then(assertInstalledToken(assert));
 });
 QUnit.test("failure", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/sessions',
@@ -196,7 +189,7 @@ QUnit.test("failure", function(assert) {
   );
 
   return KeratinAuthN.login({username: 'test', password: 'test'})
-    .then(rejectSuccess(assert))
+    .then(refuteSuccess(assert))
     .catch(assertErrors(assert));
 });
 
@@ -210,37 +203,38 @@ QUnit.test("success or failure", function(assert) {
     })
 });
 
-QUnit.module("resetPassword", startServer);
-QUnit.test("success", function(assert) {
+QUnit.module("changePassword", startServer);
+QUnit.test("success with token", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/password',
     jsonResult({id_token: idToken({age: 1})})
   );
 
-  return KeratinAuthN.resetPassword({
+  return KeratinAuthN.changePassword({
       password: 'new',
       token: jwt({foo: 'bar'})
     })
-    .then(function (token) {
-      assert.ok(token.length > 0, "token is a string of some length");
-      assert.equal(token.split('.').length, 3, "token has three parts");
+    .then(assertInstalledToken(assert));
+});
+QUnit.test("success with session", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/password',
+    jsonResult({id_token: idToken({age: 1})})
+  );
 
-      // NOTE: this test will fail when qunit is run in a browser with the
-      //       `file:///` protocol
-      if (window.location.protocol != 'file:') {
-        assert.equal(readCookie('authn'), token, "token is saved as cookie");
-      }
-    });
+  return KeratinAuthN.changePassword({
+      password: 'new'
+    })
+    .then(assertInstalledToken(assert));
 });
 QUnit.test("failure", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/password',
     jsonErrors({foo: 'bar'})
   );
 
-  return KeratinAuthN.resetPassword({
+  return KeratinAuthN.changePassword({
       password: 'new',
       token: jwt({foo: 'bar'})
     })
-    .then(rejectSuccess(assert))
+    .then(refuteSuccess(assert))
     .catch(assertErrors(assert));
 });
 

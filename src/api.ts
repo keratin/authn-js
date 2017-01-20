@@ -70,7 +70,7 @@ export function requestPasswordReset(username: string): Promise<EmptyResponse> {
   return get(url('/password/reset'), {username});
 }
 
-export function resetPassword(args: PasswordResetArgs): Promise<string> {
+export function changePassword(args: {password: string, token?: string}): Promise<string> {
   return post<TokenResponse>(url('/password'), args)
     .then((result) => result.id_token);
 }

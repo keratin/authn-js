@@ -27,9 +27,3 @@ interface SessionStore {
   update(val: string): void,
   delete(): void
 }
-
-interface PasswordResetArgs {
-  [index: string]: string;
-  password: string;
-  token: string;
-}
