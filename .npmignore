@@ -1,2 +1,6 @@
-node_modules
 src
+test
+CODE_OF_CONDUCT.md
+gulpfile.js
+tsconfig.json
+yarn.lock
