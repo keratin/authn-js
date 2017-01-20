@@ -11,6 +11,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "module": "commonjs"
+    "module": "commonjs",
+    "sourceMap": true
   }
 }
