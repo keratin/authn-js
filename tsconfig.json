@@ -3,6 +3,7 @@
     "./src/*"
   ],
   "compilerOptions": {
+    "listEmittedFiles": true,
     "declaration": true,
     "declarationDir": "./lib",
     "outDir": "./lib",

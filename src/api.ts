@@ -1,4 +1,5 @@
 import { get, post } from "./verbs";
+import { Credentials } from "./types";
 
 let inflight: boolean = false;
 

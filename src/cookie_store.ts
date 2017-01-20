@@ -1,3 +1,4 @@
+import { SessionStore } from "./types";
 import { Session } from "./session";
 
 export class CookieSessionStore implements SessionStore {
