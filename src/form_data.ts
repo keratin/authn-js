@@ -1,6 +1,4 @@
-export interface FormData {
-  [index: string]: string | undefined;
-}
+import {FormData} from "./types";
 
 // takes a simple map, returns a string
 export function formData(data: FormData): string {

@@ -19,3 +19,7 @@ export interface SessionStore {
   update(val: string): void,
   delete(): void
 }
+
+export interface FormData {
+  [index: string]: string | undefined;
+}
