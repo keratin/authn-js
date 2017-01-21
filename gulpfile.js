@@ -12,17 +12,17 @@ function build(extension) {
   let dest = extension ? `keratin-authn.${extension}.js` : `keratin-authn.js`;
 
   return browserify({
-    basedir: '.',
-    entries: [src],
-    standalone: 'KeratinAuthN'
-  })
-  .bundle()
-  .pipe(source(dest))
-  .pipe(gulp.dest("dist"))
-  .pipe(buffer())
-  .pipe(uglify({ mangle: true }))
-  .pipe(rename({ suffix: '.min' }))
-  .pipe(gulp.dest('dist'));
+      basedir: '.',
+      entries: [src],
+      standalone: 'KeratinAuthN'
+    })
+    .bundle()
+    .pipe(source(dest))
+    .pipe(gulp.dest("dist"))
+    .pipe(buffer())
+    .pipe(uglify({ mangle: true }))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest('dist'));
 }
 
 gulp.task('build-core', ['compile'], function() {

@@ -3,15 +3,19 @@
     "./src/*"
   ],
   "compilerOptions": {
+    // output format
+    "target": "es5",
+    "module": "commonjs",
+
+    // output files
     "listEmittedFiles": true,
     "declaration": true,
-    "declarationDir": "./lib",
     "outDir": "./lib",
-    "target": "es5",
+    "sourceMap": true,
+
+    // extra checks
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noImplicitThis": true,
-    "module": "commonjs",
-    "sourceMap": true
+    "noImplicitThis": true
   }
 }
