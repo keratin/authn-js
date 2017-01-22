@@ -25,6 +25,6 @@ export interface FormData {
 }
 
 export interface Error {
-  field: string;
+  field?: string;
   message: string;
 }

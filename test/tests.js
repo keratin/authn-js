@@ -111,7 +111,7 @@ QUnit.test("double submit", function(assert) {
   KeratinAuthN.signup({username: 'test', password: 'test'})
     .then(refuteSuccess(assert))
     .catch(function(errors) {
-      assert.deepEqual(errors, [{field: '', message: 'duplicate'}]);
+      assert.deepEqual(errors, [{message: 'duplicate'}]);
       done();
     });
 

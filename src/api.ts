@@ -19,7 +19,7 @@ export function signup(credentials: Credentials): Promise<string> {
     reject: (errors: Error[]) => any
   ) => {
     if (inflight) {
-      reject([{field: '', message: "duplicate"}]);
+      reject([{message: "duplicate"}]);
       return;
     } else {
       inflight = true;

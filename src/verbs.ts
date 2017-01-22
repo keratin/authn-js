@@ -34,7 +34,7 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
         } else if (xhr.status >= 200 && xhr.status < 400) {
           fulfill()
         } else {
-          reject([{field: '', message: xhr.statusText}]);
+          reject([{message: xhr.statusText}]);
         }
       }
     };
