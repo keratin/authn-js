@@ -1,3 +1,5 @@
+import { JWTClaims } from "./types";
+
 export class Session {
   readonly token: string;
   readonly claims: JWTClaims;

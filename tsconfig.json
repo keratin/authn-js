@@ -1,13 +1,21 @@
 {
   "include": [
-    "./src/*.ts"
+    "./src/*"
   ],
   "compilerOptions": {
-    "allowJs": true,
+    // output format
     "target": "es5",
+    "module": "commonjs",
+
+    // output files
+    "listEmittedFiles": true,
+    "declaration": true,
+    "outDir": "./lib",
+    "sourceMap": true,
+
+    // extra checks
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noImplicitThis": true,
-    "module": "commonjs"
+    "noImplicitThis": true
   }
 }

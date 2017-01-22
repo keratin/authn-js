@@ -1,4 +1,5 @@
-import { formData, FormData } from "./form_data";
+import { FormData } from "./types";
+import { formData } from "./form_data";
 
 export function get<T>(url: string, data: FormData): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
