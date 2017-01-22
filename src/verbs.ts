@@ -1,4 +1,4 @@
-import { FormData } from "./types";
+import { FormData, Error } from "./types";
 import { formData } from "./form_data";
 
 export function get<T>(url: string, data: FormData): Promise<T> {
@@ -17,12 +17,16 @@ export function post<T>(url: string, data: FormData): Promise<T> {
 }
 
 function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
-  return new Promise((fulfill, reject) => {
+  return new Promise((
+    fulfill: (data?: T) => any,
+    reject: (errors: Error[]) => any
+  ) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
       if (xhr.readyState == XMLHttpRequest.DONE) {
-        const data = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
+        const data: {result?: T, errors?: Error[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
+
         if (data.result) {
           fulfill(data.result);
         } else if (data.errors) {
@@ -30,7 +34,7 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
         } else if (xhr.status >= 200 && xhr.status < 400) {
           fulfill()
         } else {
-          reject(xhr.statusText);
+          reject([{field: '', message: xhr.statusText}]);
         }
       }
     };

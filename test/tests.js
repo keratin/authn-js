@@ -61,14 +61,6 @@ function assertInstalledToken(assertions) {
   }
 }
 
-function assertErrors(assertions) {
-  return function (errors) {
-    assertions.equal(errors.length, 1, "one error");
-    assertions.ok(errors[0].field, 'error has field');
-    assertions.ok(errors[0].message, 'error has message');
-  };
-}
-
 function refuteSuccess(assertions) {
   return function (data) {
     assertions.notOk(true, "should not succeed");
@@ -100,7 +92,9 @@ QUnit.test("failure", function(assert) {
 
   return KeratinAuthN.signup({username: 'test', password: 'test'})
     .then(refuteSuccess(assert))
-    .catch(assertErrors(assert));
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
 });
 QUnit.test("double submit", function(assert) {
   var done = assert.async(2);
@@ -117,9 +111,9 @@ QUnit.test("double submit", function(assert) {
   KeratinAuthN.signup({username: 'test', password: 'test'})
     .then(refuteSuccess(assert))
     .catch(function(errors) {
-      assert.equal(errors, "duplicate", "caught duplicate request");
+      assert.deepEqual(errors, [{field: '', message: 'duplicate'}]);
       done();
-    })
+    });
 
   this.server.respond();
 });
@@ -142,7 +136,9 @@ QUnit.test("name is taken", function(assert) {
 
   return KeratinAuthN.isAvailable('test')
     .then(refuteSuccess(assert))
-    .catch(assertErrors(assert));
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'username', message: 'TAKEN'}]);
+    });
 });
 
 QUnit.module("setSessionName", startServer);
@@ -190,7 +186,9 @@ QUnit.test("failure", function(assert) {
 
   return KeratinAuthN.login({username: 'test', password: 'test'})
     .then(refuteSuccess(assert))
-    .catch(assertErrors(assert));
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
 });
 
 QUnit.module("requestPasswordReset", startServer);
@@ -235,7 +233,9 @@ QUnit.test("failure", function(assert) {
       token: jwt({foo: 'bar'})
     })
     .then(refuteSuccess(assert))
-    .catch(assertErrors(assert));
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
 });
 
 
