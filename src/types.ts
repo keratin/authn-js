@@ -23,3 +23,8 @@ export interface SessionStore {
 export interface FormData {
   [index: string]: string | undefined;
 }
+
+export interface Error {
+  field?: string;
+  message: string;
+}

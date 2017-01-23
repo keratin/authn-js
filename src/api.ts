@@ -1,5 +1,5 @@
 import { get, post } from "./verbs";
-import { Credentials } from "./types";
+import { Credentials, Error } from "./types";
 
 let inflight: boolean = false;
 
@@ -14,9 +14,12 @@ interface TokenResponse{
 }
 
 export function signup(credentials: Credentials): Promise<string> {
-  return new Promise((fulfill, reject) => {
+  return new Promise((
+    fulfill: (data?: string) => any,
+    reject: (errors: Error[]) => any
+  ) => {
     if (inflight) {
-      reject("duplicate");
+      reject([{message: "duplicate"}]);
       return;
     } else {
       inflight = true;
