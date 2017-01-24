@@ -1,6 +1,6 @@
 {
   "name": "keratin-authn",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Browser integration library for Keratin AuthN service.",
   "main": "./lib/main.js",
   "types": "./lib/main.d.ts",
