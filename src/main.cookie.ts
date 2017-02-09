@@ -1,5 +1,3 @@
-import { Credentials, SessionStore } from "./types";
-import { Session } from "./session";
 import { SessionManager } from "./session_manager";
 import { CookieSessionStore } from "./cookie_store";
 import { signup as signupAPI, login as loginAPI, logout as logoutAPI, changePassword as changePasswordAPI } from "./api";
@@ -38,7 +36,7 @@ export function changePassword(args: {password: string, token?: string}): Promis
     .then(updateAndReturn);
 }
 
-export function session(): Session|undefined {
+export function session(): Session | undefined {
   return (store) ? store.session : undefined;
 }
 

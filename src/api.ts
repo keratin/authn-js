@@ -1,5 +1,4 @@
 import { get, post } from "./verbs";
-import { Credentials, Error } from "./types";
 
 let inflight: boolean = false;
 
@@ -16,7 +15,7 @@ interface TokenResponse{
 export function signup(credentials: Credentials): Promise<string> {
   return new Promise((
     fulfill: (data?: string) => any,
-    reject: (errors: Error[]) => any
+    reject: (errors: KeratinError[]) => any
   ) => {
     if (inflight) {
       reject([{message: "duplicate"}]);

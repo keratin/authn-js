@@ -1,10 +1,9 @@
-import { SessionStore } from "./types";
-import { Session } from "./session";
+import { JWTSession } from "./session";
 
 export class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;
   private readonly secureFlag: string;
-  session: Session|undefined;
+  session: JWTSession | undefined;
 
   constructor(cookieName: string) {
     this.sessionName = cookieName;
@@ -12,12 +11,12 @@ export class CookieSessionStore implements SessionStore {
 
     const current = document.cookie.replace(new RegExp(`(?:(?:^|.*;\\\s*)${this.sessionName}\\\s*\\\=\\\s*([^;]*).*$)|^.*$`), "$1");
     if (current) {
-      this.session = new Session(current);
+      this.session = new JWTSession(current);
     }
   }
 
   update(val: string) {
-    this.session = new Session(val);
+    this.session = new JWTSession(val);
     document.cookie = `${this.sessionName}=${val}${this.secureFlag}`;
   }
 
