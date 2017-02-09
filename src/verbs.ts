@@ -1,4 +1,4 @@
-import { formData } from "./form_data";
+import formData from "./formData";
 
 export function get<T>(url: string, data: StringMap): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {

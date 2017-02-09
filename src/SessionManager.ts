@@ -1,6 +1,6 @@
 import { refresh as refreshAPI } from "./api";
 
-export class SessionManager {
+export default class SessionManager {
   private readonly store: SessionStore;
   private timeoutID: number;
 

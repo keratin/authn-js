@@ -1,4 +1,4 @@
-export class JWTSession implements Session {
+export default class JWTSession implements Session {
   readonly token: string;
   readonly claims: JWTClaims;
 

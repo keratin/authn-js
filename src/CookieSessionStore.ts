@@ -1,6 +1,6 @@
-import { JWTSession } from "./session";
+import JWTSession from "./JWTSession";
 
-export class CookieSessionStore implements SessionStore {
+export default class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;
   private readonly secureFlag: string;
   session: JWTSession | undefined;

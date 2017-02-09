@@ -1,5 +1,5 @@
 // takes a simple map, returns a string
-export function formData(data: StringMap): string {
+export default function formData(data: StringMap): string {
   return Object.keys(data)
     .map((k) => formDataItem(k, data[k]))
     .filter((str) => str !== undefined)
