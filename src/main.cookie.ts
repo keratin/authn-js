@@ -1,4 +1,3 @@
-import SessionManager from "./SessionManager";
 import CookieSessionStore from "./CookieSessionStore";
 import { setStore } from "./main";
 

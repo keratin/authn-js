@@ -57,13 +57,13 @@ Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.mi
 
 The following API methods are always available to integrate your AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
 
-* `KeratinAuthN.session(): Session | undefined`: returns the session found in AuthN's current session store.
+* `KeratinAuthN.session(): string | undefined`: returns the session (as a JWT) found in AuthN's current session store.
 * `KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful signup has established a session. May error with field-specific validation failures.
 * `KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful login has established a session. May error with generic validation failures.
 * `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. Automatically ends the session in AuthN's current session store.
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
 * `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
-* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>`: returns a Promise that is fulfilled when the password has been reset. Establishes a session. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. May error with password validations, or invalid/expired tokens.
+* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>`: returns a Promise that is fulfilled when the password has been reset. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. Establishes a session. May error with password validations, or invalid/expired tokens.
 
 If you have loaded `keratin-authn.cookie`, then:
 

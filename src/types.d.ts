@@ -5,11 +5,11 @@ interface Credentials {
 }
 
 interface JWTClaims {
-  iss: string,
-  aud: string,
-  sub: number,
-  iat: number,
-  exp: number
+  iss: string;
+  aud: string;
+  sub: number;
+  iat: number;
+  exp: number;
 }
 
 declare class Session {
@@ -26,9 +26,9 @@ declare class Session {
 }
 
 interface SessionStore {
-  session: Session | undefined,
-  update(val: string): void,
-  delete(): void
+  read(): string | undefined;
+  update(val: string): void;
+  delete(): void;
 }
 
 interface StringMap {
