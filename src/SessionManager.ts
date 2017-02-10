@@ -1,15 +1,24 @@
 import { refresh as refreshAPI } from "./api";
+import MemorySessionStore from './MemorySessionStore';
 
 export default class SessionManager {
-  private readonly store: SessionStore;
+  private store: SessionStore;
   private timeoutID: number;
 
-  constructor(store: SessionStore) {
+  constructor(store = new MemorySessionStore) {
     this.store = store;
   }
 
   get session(): Session | undefined {
     return this.store.session;
+  }
+
+  setStore(store: SessionStore): void {
+    this.store = store;
+  }
+
+  endSession(): void {
+    this.store.delete();
   }
 
   maintain(): void {

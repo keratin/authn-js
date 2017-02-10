@@ -1,9 +1,13 @@
+/*
+ * Bare API methods have no local side effects (unless you count debouncing).
+ */
+
 import { get, post } from "./verbs";
 
+// TODO: extract debouncing
 let inflight: boolean = false;
 
 let ISSUER: string = '';
-
 export function setHost(URL: string): void {
   ISSUER = URL.replace(/\/$/, '');
 }
@@ -28,9 +32,8 @@ export function signup(credentials: Credentials): Promise<string> {
       .then(
         (result) => fulfill(result.id_token),
         (errors) => reject(errors)
-      ).then(
-        () => inflight = false
-      );
+      )
+      .then(() => inflight = false);
   });
 }
 
