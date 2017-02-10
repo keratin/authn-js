@@ -1,17 +1,22 @@
-import { SessionStore } from "./types";
-import { Session } from "./session";
 import { refresh as refreshAPI } from "./api";
+import JWTSession from "./JWTSession";
 
-export class SessionManager {
-  private readonly store: SessionStore;
+export default class SessionManager {
+  private store: SessionStore | undefined;
   private timeoutID: number;
+  session: JWTSession | undefined;
 
-  constructor(store: SessionStore) {
+  setStore(store: SessionStore): void {
     this.store = store;
+    const current = store.read();
+    this.session = current ? new JWTSession(current) : undefined;
   }
 
-  get session(): Session | undefined {
-    return this.store.session;
+  endSession(): void {
+    this.session = undefined;
+    if (this.store) {
+      this.store.delete();
+    }
   }
 
   maintain(): void {
@@ -32,10 +37,11 @@ export class SessionManager {
   }
 
   updateAndMaintain(id_token: string): void {
-    this.store.update(id_token);
-    if (this.session) {
-      this.scheduleRefresh(this.session.halflife() * 1000);
+    if (this.store) {
+      this.store.update(id_token);
     }
+    this.session = new JWTSession(id_token);
+    this.scheduleRefresh(this.session.halflife() * 1000);
   }
 
   private scheduleRefresh(delay: number): void {
@@ -48,7 +54,7 @@ export class SessionManager {
       (id_token) => this.updateAndMaintain(id_token),
       (error) => {
         if (error === 'Unauthorized') {
-          this.store.delete();
+          this.endSession();
         }
       }
     );

@@ -1,14 +1,13 @@
-import { FormData, Error } from "./types";
-import { formData } from "./form_data";
+import formData from "./formData";
 
-export function get<T>(url: string, data: FormData): Promise<T> {
+export function get<T>(url: string, data: StringMap): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("GET", `${url}?${formData(data)}`.replace(/\?$/, ''));
     xhr.send();
   });
 }
 
-export function post<T>(url: string, data: FormData): Promise<T> {
+export function post<T>(url: string, data: StringMap): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("POST", url);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -19,13 +18,13 @@ export function post<T>(url: string, data: FormData): Promise<T> {
 function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
   return new Promise((
     fulfill: (data?: T) => any,
-    reject: (errors: Error[]) => any
+    reject: (errors: KeratinError[]) => any
   ) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
       if (xhr.readyState == XMLHttpRequest.DONE) {
-        const data: {result?: T, errors?: Error[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
+        const data: {result?: T, errors?: KeratinError[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
 
         if (data.result) {
           fulfill(data.result);

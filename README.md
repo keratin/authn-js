@@ -19,7 +19,7 @@ Fetch the node module from NPM:
 * `npm install keratin-authn`
 * `yarn add keratin-authn`
 
-Then choose between the minimal API client:
+Then choose between the default memory-backed client (user will begin as logged out on each page load):
 
 ```javascript
 // the minimal API client
@@ -28,7 +28,7 @@ var AuthN = require("keratin-authn");
 AuthN.setHost("https://authn.myapp.com");
 ```
 
-or the opinionated API client with cookie-based session storage:
+Or the client with cookie persistence support:
 
 ```javascript
 var AuthN = require("keratin-authn/dist/keratin-authn.cookie");
@@ -57,19 +57,17 @@ Load or concatenate `dist/keratin-authn.min.js` or `dist/keratin-authn.cookie.mi
 
 The following API methods are always available to integrate your AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
 
-* `KeratinAuthN.signup(obj: {username: string, password: string}): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with field-specific validation failures.
-* `KeratinAuthN.login(obj: {username: string, password: string}): Promise<string>`: returns a Promise that is fulfilled with an ID Token you may use as a session for your application's backend. May error with generic validation failures.
-* `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. You are still responsible for discarding the app session.
+* `KeratinAuthN.session(): string | undefined`: returns the session (as a JWT) found in AuthN's current session store.
+* `KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful signup has established a session. May error with field-specific validation failures.
+* `KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful login has established a session. May error with generic validation failures.
+* `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. Automatically ends the session in AuthN's current session store.
 * `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
-* `KeratinAuthN.refresh(): Promise<string>`: returns a Promise that is fulfilled with a fresh ID Token unless the user has been logged-out from AuthN
 * `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
-* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<string>`: returns a Promise that is fulfilled when the password has been reset. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. May error with password validations, or invalid/expired tokens.
+* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>`: returns a Promise that is fulfilled when the password has been reset. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. Establishes a session. May error with password validations, or invalid/expired tokens.
 
 If you have loaded `keratin-authn.cookie`, then:
 
-* `KeratinAuthN.setSessionName(name: string): void` will configure the cookie name and automatically begin monitoring and refreshing the cookie before it expires. You should call this on each page load.
-* `KeratinAuthN.signup()`, `KeratinAuthN.login()`, and `KeratinAuthN.changePassword()` will automatically set the ID Token as a cookie.
-* `KeratinAuthN.logout()` will automatically delete the ID Token cookie.
+* `KeratinAuthN.setSessionName(name: string): void` will configure AuthN to read and write a named cookie for session persistence. You should call this on each page load.
 
 ## Development
 

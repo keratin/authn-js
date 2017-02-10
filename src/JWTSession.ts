@@ -1,6 +1,4 @@
-import { JWTClaims } from "./types";
-
-export class Session {
+export default class JWTSession implements Session {
   readonly token: string;
   readonly claims: JWTClaims;
 
@@ -9,15 +7,15 @@ export class Session {
     this.claims = jwt_claims(token);
   }
 
-  iat(): number {
+  iat() {
     return this.claims.iat;
   }
 
-  exp(): number {
+  exp() {
     return this.claims.exp;
   }
 
-  halflife(): number {
+  halflife() {
     return (this.exp() - this.iat()) / 2;
   }
 }

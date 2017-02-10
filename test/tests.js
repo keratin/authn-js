@@ -51,7 +51,8 @@ function deleteCookie(name) {
 }
 
 function assertInstalledToken(assertions) {
-  return function (token) {
+  return function () {
+    var token = KeratinAuthN.session();
     assertions.ok(token.length > 0, "token is a string of some length");
     assertions.equal(token.split('.').length, 3, "token has three parts");
 
@@ -163,9 +164,9 @@ QUnit.test("aging session", function(assert) {
 
   writeCookie('authn', oldSession);
   KeratinAuthN.setSessionName('authn');
-  assert.equal(KeratinAuthN.session().token, oldSession, "session found is old");
+  assert.equal(KeratinAuthN.session(), oldSession, "session found is old");
   setTimeout(function () {
-    assert.equal(KeratinAuthN.session().token, newSession, "session is updated");
+    assert.equal(KeratinAuthN.session(), newSession, "session is updated");
     done();
   }, 10);
 });
