@@ -33,9 +33,13 @@ gulp.task('build-cookie', ['compile'], function() {
   return build('cookie');
 });
 
-gulp.task('default', ['build-core', 'build-cookie']);
+gulp.task('build-localstorage', ['compile'], function() {
+  return build('localstorage');
+});
 
-gulp.task('test', ['build-core', 'build-cookie'], function () {
+gulp.task('default', ['build-core', 'build-cookie', 'build-localstorage']);
+
+gulp.task('test', ['default'], function () {
   return gulp.src('./test/runner.html')
     .pipe(qunit());
 });
