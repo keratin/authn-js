@@ -1,6 +1,7 @@
 {
   "include": [
-    "./src/*"
+    "./src/*",
+    "./types.d.ts"
   ],
   "compilerOptions": {
     // output format

@@ -3,7 +3,7 @@
   "version": "0.7.0",
   "description": "Browser integration library for Keratin AuthN service.",
   "main": "./lib/main.js",
-  "types": "./lib/main.d.ts",
+  "types": "./types.d.ts",
   "author": "Lance Ivy",
   "license": "LGPL-3.0",
   "dependencies": {},
