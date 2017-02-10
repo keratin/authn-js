@@ -37,7 +37,11 @@ export function changePassword(args: {password: string, token?: string}): Promis
 }
 
 // export remaining API methods unmodified
-export * from "./api";
+export {
+  setHost,
+  isAvailable,
+  requestPasswordReset
+} from "./api";
 
 function updateStore(token: string) {
   manager.updateAndMaintain(token);
