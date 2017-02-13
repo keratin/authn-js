@@ -20,7 +20,7 @@ KeratinAuthN offers three persistence modes, each useful to a different type of 
 
 KeratinAuthN currently depends on [CORS support](http://caniuse.com/#search=cors). Future versions may add backwards compatibility, depending on demand.
 
-KeratinAuthN also requires global support for ES6 Promises. You can get a polyfill from https://github.com/stefanpenner/es6-promise.
+KeratinAuthN also requires global support for ES6 Promises. You can get a polyfill from [stefanpenner/es6-promise](https://github.com/stefanpenner/es6-promise).
 
 ### Vanilla JS
 
@@ -41,21 +41,66 @@ Fetch the node module from NPM:
 
 ## Configuration
 
-* **required:** `KeratinAuthN.setHost(url: string): void` configures where to connect with your AuthN service.
-* `KeratinAuthN.setCookieStore(name: string): void` will configure AuthN to read and write from a named cookie for session persistence.
-* `KeratinAuthN.setLocalStorageStore(name: string): void` will configure AuthN to read and write from localStorage for session persistence.
+```javascript
+// Configure where to connect with your AuthN service.
+KeratinAuthN.setHost(url: string): void
+```
+
+```javascript
+// Configure AuthN to read and write from a named cookie for session persistence.
+KeratinAuthN.setCookieStore(name: string): void
+```
+
+```javascript
+// Configure AuthN to read and write from localStorage for session persistence.
+KeratinAuthN.setLocalStorageStore(name: string): void
+```
 
 ## API
 
-Use the following API methods to integrate your AuthN service (notation given in [TypeScript](http://www.typescriptlang.org/docs/handbook/functions.html)):
+Use the following API methods to integrate your AuthN service:
 
-* `KeratinAuthN.session(): string | undefined`: returns the session (as a JWT) found in AuthN's current session store.
-* `KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful signup has established a session. May error with field-specific validation failures.
-* `KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>`: returns a Promise that is fulfilled when a successful login has established a session. May error with generic validation failures.
-* `KeratinAuthN.logout(): Promise<void>`: returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame. Automatically ends the session in AuthN's current session store.
-* `KeratinAuthN.isAvailable(username: string): Promise<boolean>`: returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
-* `KeratinAuthN.requestPasswordReset(username: string): Promise<>`: requests a password reset for the given username and _always claims to succeed_. If this truly succeeds, AuthN will send a reset token to your server for email delivery.
-* `KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>`: returns a Promise that is fulfilled when the password has been reset. If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided. Establishes a session. May error with password validations, or invalid/expired tokens.
+```javascript
+// Get the session (as a JWT) found in AuthN's current session store.
+KeratinAuthN.session(): string | undefined
+```
+
+```javascript
+// Returns a Promise that is fulfilled when a successful signup has established a session.
+// May error with field-specific validation failures.
+KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>
+```
+
+```javascript
+// Returns a Promise that is fulfilled when a successful login has established a session.
+// May error with generic validation failures.
+KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>
+```
+
+```javascript
+// Returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame.
+// Automatically ends the session in AuthN's current session store.
+KeratinAuthN.logout(): Promise<void>
+```
+
+```javascript
+// Returns a Promise that is fulfilled with an indication whether the username is available or has been claimed.
+KeratinAuthN.isAvailable(username: string): Promise<boolean>
+```
+
+```javascript
+// Requests a password reset for the given username and _always claims to succeed_.
+// If this truly succeeds, AuthN will send a reset token to your server for email delivery.
+KeratinAuthN.requestPasswordReset(username: string): Promise<>
+```
+
+```javascript
+// Returns a Promise that is fulfilled when the password has been reset.
+// If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided.
+// Establishes a session.
+// May error with password validations, or invalid/expired tokens.
+KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>
+```
 
 ## Development
 
