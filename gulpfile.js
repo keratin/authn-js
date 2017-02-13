@@ -20,7 +20,7 @@ gulp.task('compile', function (cb) {
 gulp.task('build', ['compile'], function() {
   return browserify({
       basedir: '.',
-      entries: ['lib/main.js'],
+      entries: ['lib/index.js'],
       standalone: 'KeratinAuthN'
     })
     .bundle()
