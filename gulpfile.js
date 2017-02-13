@@ -7,47 +7,34 @@ var source = require('vinyl-source-stream');
 var uglify = require('gulp-uglify');
 var qunit = require('gulp-qunit');
 
-function build(extension) {
-  let src = extension ? `lib/main.${extension}.js` : `lib/main.js`;
-  let dest = extension ? `keratin-authn.${extension}.js` : `keratin-authn.js`;
-
-  return browserify({
-      basedir: '.',
-      entries: [src],
-      standalone: 'KeratinAuthN'
-    })
-    .bundle()
-    .pipe(source(dest))
-    .pipe(gulp.dest("dist"))
-    .pipe(buffer())
-    .pipe(uglify({ mangle: true }))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('dist'));
-}
-
-gulp.task('build-core', ['compile'], function() {
-  return build();
-});
-
-gulp.task('build-cookie', ['compile'], function() {
-  return build('cookie');
-});
-
-gulp.task('build-localstorage', ['compile'], function() {
-  return build('localstorage');
-});
-
-gulp.task('default', ['build-core', 'build-cookie', 'build-localstorage']);
-
-gulp.task('test', ['default'], function () {
-  return gulp.src('./test/runner.html')
-    .pipe(qunit());
-});
-
+// compile from src to lib (commonjs)
 gulp.task('compile', function (cb) {
   exec('tsc', function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
     cb(err);
   });
+});
+
+// build from lib to dist (UMD)
+gulp.task('build', ['compile'], function() {
+  return browserify({
+      basedir: '.',
+      entries: ['lib/main.js'],
+      standalone: 'KeratinAuthN'
+    })
+    .bundle()
+    .pipe(source('keratin-authn.js'))
+    .pipe(gulp.dest("dist"))
+    .pipe(buffer())
+    .pipe(uglify({ mangle: true }))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('default', ['build']);
+
+gulp.task('test', ['build'], function () {
+  return gulp.src('./test/runner.html')
+    .pipe(qunit());
 });
