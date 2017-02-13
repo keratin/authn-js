@@ -1,4 +1,6 @@
 import SessionManager from './SessionManager';
+import CookieSessionStore from "./CookieSessionStore";
+import LocalStorageSessionStore from "./LocalStorageSessionStore";
 import {
   signup as signupAPI,
   login as loginAPI,
@@ -7,9 +9,17 @@ import {
 } from "./api";
 
 let manager = new SessionManager();
-export function setStore(store: SessionStore): void {
+function setStore(store: SessionStore): void {
   manager.setStore(store);
   manager.maintain();
+}
+
+export function setCookieStore(sessionName: string): void {
+  setStore(new CookieSessionStore(sessionName));
+}
+
+export function setLocalStorageStore(sessionName: string): void {
+  setStore(new LocalStorageSessionStore(sessionName));
 }
 
 export function session(): string | undefined {

@@ -1,6 +1,6 @@
 QUnit.begin(function () {
   KeratinAuthN.setHost('https://authn.example.com');
-  KeratinAuthN.setSessionName('authn');
+  KeratinAuthN.setCookieStore('authn');
   writeCookie('hello', 'world');
   writeCookie('foo', 'bar');
 });
@@ -142,15 +142,15 @@ QUnit.test("name is taken", function(assert) {
     });
 });
 
-QUnit.module("setSessionName", startServer);
+QUnit.module("setCookieStore", startServer);
 QUnit.test("no existing session", function(assert) {
   deleteCookie('authn');
-  KeratinAuthN.setSessionName('authn');
+  KeratinAuthN.setCookieStore('authn');
   assert.notOk(KeratinAuthN.session(), "no session");
 });
 QUnit.test("existing session", function(assert) {
   writeCookie('authn', idToken({age: 1}));
-  KeratinAuthN.setSessionName('authn');
+  KeratinAuthN.setCookieStore('authn');
   assert.ok(KeratinAuthN.session(), "session found");
 });
 QUnit.test("aging session", function(assert) {
@@ -163,7 +163,7 @@ QUnit.test("aging session", function(assert) {
   );
 
   writeCookie('authn', oldSession);
-  KeratinAuthN.setSessionName('authn');
+  KeratinAuthN.setCookieStore('authn');
   assert.equal(KeratinAuthN.session(), oldSession, "session found is old");
   setTimeout(function () {
     assert.equal(KeratinAuthN.session(), newSession, "session is updated");
