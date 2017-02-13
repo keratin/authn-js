@@ -1,3 +1,5 @@
+import { StringMap } from "./types";
+
 // takes a simple map, returns a string
 export default function formData(data: StringMap): string {
   return Object.keys(data)

@@ -2,6 +2,7 @@
  * Bare API methods have no local side effects (unless you count debouncing).
  */
 
+import { Credentials, KeratinError } from './types';
 import { get, post } from "./verbs";
 
 // TODO: extract debouncing

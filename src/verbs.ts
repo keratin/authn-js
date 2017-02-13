@@ -1,3 +1,5 @@
+import { StringMap } from "./types";
+import { KeratinError } from "./types";
 import formData from "./formData";
 
 export function get<T>(url: string, data: StringMap): Promise<T> {

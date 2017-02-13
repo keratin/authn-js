@@ -1,3 +1,4 @@
+import { SessionStore } from "./types";
 import { refresh as refreshAPI } from "./api";
 import JWTSession from "./JWTSession";
 

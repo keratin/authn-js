@@ -1,3 +1,4 @@
+import { SessionStore } from "./types";
 import JWTSession from "./JWTSession";
 
 export default class CookieSessionStore implements SessionStore {

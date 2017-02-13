@@ -1,3 +1,4 @@
+import { Credentials, SessionStore } from './types';
 import SessionManager from './SessionManager';
 import CookieSessionStore from "./CookieSessionStore";
 import LocalStorageSessionStore from "./LocalStorageSessionStore";

@@ -1,10 +1,15 @@
-interface Credentials {
+export interface Credentials {
   [index: string]: string;
   username: string;
   password: string;
 }
 
-interface JWTClaims {
+export interface KeratinError {
+  field?: string;
+  message: string;
+}
+
+export interface JWTClaims {
   iss: string;
   aud: string;
   sub: number;
@@ -12,7 +17,7 @@ interface JWTClaims {
   exp: number;
 }
 
-declare class Session {
+export declare class Session {
   readonly token: string;
   readonly claims: JWTClaims;
 
@@ -25,17 +30,12 @@ declare class Session {
   halflife(): number;
 }
 
-interface SessionStore {
+export interface SessionStore {
   read(): string | undefined;
   update(val: string): void;
   delete(): void;
 }
 
-interface StringMap {
+export interface StringMap {
   [index: string]: string | undefined;
-}
-
-interface KeratinError {
-  field?: string;
-  message: string;
 }
