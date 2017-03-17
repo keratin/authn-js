@@ -170,6 +170,21 @@ QUnit.test("aging session", function(assert) {
     done();
   }, 10);
 });
+QUnit.test("expired session", function(assert) {
+  var done = assert.async();
+  writeCookie('authn', idToken({age: 7200}));
+  this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh', [
+    401,
+    {},
+    ""
+  ]);
+
+  KeratinAuthN.setCookieStore('authn');
+  setTimeout(function () {
+    assert.notOk(KeratinAuthN.session(), "no session");
+    done();
+  }, 10);
+});
 
 QUnit.module("login", startServer);
 QUnit.test("success", function(assert) {
@@ -240,5 +255,4 @@ QUnit.test("failure", function(assert) {
 });
 
 
-// refresh()
 // logout()

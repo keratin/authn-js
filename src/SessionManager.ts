@@ -53,9 +53,11 @@ export default class SessionManager {
   private refresh(): void {
     refreshAPI().then(
       (id_token) => this.updateAndMaintain(id_token),
-      (error) => {
-        if (error === 'Unauthorized') {
+      (errors) => {
+        if (errors[0] && errors[0].message === 'Unauthorized') {
           this.endSession();
+        } else {
+          throw errors;
         }
       }
     );
