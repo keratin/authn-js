@@ -35,7 +35,10 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
         } else if (xhr.status >= 200 && xhr.status < 400) {
           fulfill()
         } else {
-          reject([{message: xhr.statusText}]);
+          reject([{
+            // http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#14507670
+            message: xhr.statusText === '' ? 'connection failed' : xhr.statusText
+          }]);
         }
       }
     };
