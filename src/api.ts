@@ -52,22 +52,8 @@ export function login(credentials: Credentials): Promise<string> {
     .then((result) => result.id_token);
 }
 
-export function logout(): Promise<{}> {
-  return new Promise(function(fulfill) {
-    let iframe = document.createElement('iframe');
-    iframe.onload = () => {
-      iframe.remove();
-      fulfill();
-    };
-    iframe.src = url('/sessions/logout');
-
-    const style = iframe.style;
-    style.height = '0';
-    style.width = '0';
-    style.border = '0';
-
-    document.querySelector('body').appendChild(iframe);
-  });
+export function logout(): Promise<void> {
+  return get<void>(url('/sessions/logout'), {});
 }
 
 export function requestPasswordReset(username: string): Promise<{}> {

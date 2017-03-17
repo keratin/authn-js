@@ -254,5 +254,15 @@ QUnit.test("failure", function(assert) {
     });
 });
 
+QUnit.module("logout", startServer);
+QUnit.test("success", function(assert) {
+  writeCookie('authn', idToken({age: 1}));
+  KeratinAuthN.setCookieStore('authn');
+  this.server.respondWith('GET', 'https://authn.example.com/sessions/logout', '');
 
-// logout()
+  assert.ok(KeratinAuthN.session());
+  return KeratinAuthN.logout()
+    .then(function() {
+      assert.notOk(KeratinAuthN.session());
+    });
+});
