@@ -25,8 +25,8 @@ export default class SessionManager {
       return;
     }
 
-    const refreshAt = (this.session.iat() + this.session.halflife()) * 1000; // in ms
-    const now = (new Date).getTime();
+    const refreshAt = (this.session.iat() + this.session.halflife());
+    const now = (new Date).getTime(); // in ms
 
     // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
     // maintaining their session on pretty much every page load.
@@ -42,7 +42,7 @@ export default class SessionManager {
       this.store.update(id_token);
     }
     this.session = new JWTSession(id_token);
-    this.scheduleRefresh(this.session.halflife() * 1000);
+    this.scheduleRefresh(this.session.halflife());
   }
 
   private scheduleRefresh(delay: number): void {
