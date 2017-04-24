@@ -12,7 +12,7 @@ import {
 let manager = new SessionManager();
 function setStore(store: SessionStore): void {
   manager.setStore(store);
-  manager.maintain();
+  manager.restoreSession();
 }
 
 export function setCookieStore(sessionName: string): void {

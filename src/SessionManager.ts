@@ -9,8 +9,28 @@ export default class SessionManager {
 
   setStore(store: SessionStore): void {
     this.store = store;
-    const current = store.read();
-    this.session = current ? new JWTSession(current) : undefined;
+  }
+
+  restoreSession(): void {
+    if (!this.store) return;
+
+    const current = this.store.read();
+    if (current) {
+      const session = new JWTSession(current);
+      const now = (new Date).getTime();
+
+      if (now < session.exp()) {
+        this.session = session;
+        this.maintain();
+      } else {
+        // NOTE: if the client's clock is quite wrong, then each page load will appear logged out
+        // until a refresh takes over the timing with setInterval.
+        this.session = undefined;
+        this.refresh();
+      }
+    } else {
+      this.session = undefined;
+    }
   }
 
   endSession(): void {
