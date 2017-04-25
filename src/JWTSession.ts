@@ -10,11 +10,11 @@ export default class JWTSession implements Session {
   }
 
   iat() {
-    return this.claims.iat;
+    return this.claims.iat * 1000;
   }
 
   exp() {
-    return this.claims.exp;
+    return this.claims.exp * 1000;
   }
 
   halflife() {
