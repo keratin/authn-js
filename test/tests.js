@@ -164,14 +164,13 @@ QUnit.test("aging session", function(assert) {
 
   writeCookie('authn', oldSession);
   KeratinAuthN.setCookieStore('authn');
-  assert.equal(KeratinAuthN.session(), oldSession, "session found is old");
+  assert.equal(KeratinAuthN.session(), oldSession, "session found is old but viable");
   setTimeout(function () {
     assert.equal(KeratinAuthN.session(), newSession, "session is updated");
     done();
   }, 10);
 });
 QUnit.test("expired session", function(assert) {
-  var done = assert.async();
   var oldSession = idToken({age: 9999});
   var newSession = idToken({age: 1});
 
@@ -180,15 +179,14 @@ QUnit.test("expired session", function(assert) {
   );
 
   writeCookie('authn', oldSession);
-  KeratinAuthN.setCookieStore('authn');
+  var promise = KeratinAuthN.setCookieStore('authn');
   assert.notOk(KeratinAuthN.session(), "found session is too old");
-  setTimeout(function () {
-    assert.equal(KeratinAuthN.session(), newSession, "session re-established");
-    done();
-  }, 10);
+  return promise
+    .then(function () {
+      assert.equal(KeratinAuthN.session(), newSession, "session re-established");
+    });
 });
 QUnit.test("aging and revoked session", function(assert) {
-  var done = assert.async();
   writeCookie('authn', idToken({age: 3000}));
   this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh', [
     401,
@@ -196,11 +194,13 @@ QUnit.test("aging and revoked session", function(assert) {
     ""
   ]);
 
-  KeratinAuthN.setCookieStore('authn');
-  setTimeout(function () {
-    assert.notOk(KeratinAuthN.session(), "no session");
-    done();
-  }, 10);
+  var promise = KeratinAuthN.setCookieStore('authn');
+  assert.ok(KeratinAuthN.session(), "session is still possibly viable")
+  return promise
+    .then(refuteSuccess)
+    .catch(function () {
+      assert.notOk(KeratinAuthN.session(), "session was revoked");
+    });
 });
 
 QUnit.module("login", startServer);
