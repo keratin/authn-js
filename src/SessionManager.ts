@@ -9,8 +9,41 @@ export default class SessionManager {
 
   setStore(store: SessionStore): void {
     this.store = store;
-    const current = store.read();
-    this.session = current ? new JWTSession(current) : undefined;
+  }
+
+  restoreSession(): Promise<void> {
+    return new Promise<void>((fulfill, reject) => {
+      // configuration error
+      if (!this.store) {
+        reject();
+        return;
+      }
+
+      // nothing to restore
+      const current = this.store.read();
+      if (!current) {
+        this.session = undefined;
+        reject();
+        return;
+      }
+
+      const session = new JWTSession(current);
+      const now = (new Date).getTime();
+
+      // session is viable
+      if (now < session.exp()) {
+        this.session = session;
+        this.maintain();
+        fulfill();
+      // session is expired (if we trust clocks)
+      } else {
+        // NOTE: if the client's clock is quite wrong, then each page load will appear logged out
+        // until a refresh takes over the timing with setInterval.
+        this.session = undefined;
+        this.refresh()
+          .then(fulfill, reject);
+      }
+    });
   }
 
   endSession(): void {
@@ -20,7 +53,7 @@ export default class SessionManager {
     }
   }
 
-  maintain(): void {
+  private maintain(): void {
     if (!this.session) {
       return;
     }
@@ -50,8 +83,8 @@ export default class SessionManager {
     this.timeoutID = setTimeout(() => this.refresh(), delay);
   }
 
-  private refresh(): void {
-    refreshAPI().then(
+  private refresh(): Promise<void> {
+    return refreshAPI().then(
       (id_token) => this.updateAndMaintain(id_token),
       (errors) => {
         if (errors[0] && errors[0].message === 'Unauthorized') {

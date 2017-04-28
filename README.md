@@ -48,12 +48,14 @@ KeratinAuthN.setHost(url: string): void
 
 ```javascript
 // Configure AuthN to read and write from a named cookie for session persistence.
-KeratinAuthN.setCookieStore(name: string): void
+// Returns a Promise that is fulfilled if a session was restored from an existing cookie.
+KeratinAuthN.setCookieStore(name: string): Promise<void>
 ```
 
 ```javascript
 // Configure AuthN to read and write from localStorage for session persistence.
-KeratinAuthN.setLocalStorageStore(name: string): void
+// Returns a Promise that is fulfilled if a session was restored from localStorage.
+KeratinAuthN.setLocalStorageStore(name: string): Promise<void>
 ```
 
 ## API
