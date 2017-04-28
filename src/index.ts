@@ -10,17 +10,20 @@ import {
 } from "./api";
 
 let manager = new SessionManager();
-function setStore(store: SessionStore): Promise<void> {
+function setStore(store: SessionStore): void {
   manager.setStore(store);
+}
+
+export function restoreSession(): Promise<void> {
   return manager.restoreSession();
 }
 
-export function setCookieStore(sessionName: string): Promise<void> {
-  return setStore(new CookieSessionStore(sessionName));
+export function setCookieStore(sessionName: string): void {
+  setStore(new CookieSessionStore(sessionName));
 }
 
-export function setLocalStorageStore(sessionName: string): Promise<void> {
-  return setStore(new LocalStorageSessionStore(sessionName));
+export function setLocalStorageStore(sessionName: string): void {
+  setStore(new LocalStorageSessionStore(sessionName));
 }
 
 export function session(): string | undefined {
