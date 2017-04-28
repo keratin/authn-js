@@ -275,7 +275,7 @@ QUnit.module("logout", startServer);
 QUnit.test("success", function(assert) {
   writeCookie('authn', idToken({age: 1}));
   KeratinAuthN.setCookieStore('authn');
-  this.server.respondWith('GET', 'https://authn.example.com/sessions/logout', '');
+  this.server.respondWith('DELETE', 'https://authn.example.com/sessions', '');
 
   assert.ok(KeratinAuthN.session());
   return KeratinAuthN.logout()
