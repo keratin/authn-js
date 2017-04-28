@@ -142,15 +142,15 @@ QUnit.test("name is taken", function(assert) {
     });
 });
 
-QUnit.module("setCookieStore", startServer);
+QUnit.module("restoreSession", startServer);
 QUnit.test("no existing session", function(assert) {
   deleteCookie('authn');
-  KeratinAuthN.setCookieStore('authn');
+  KeratinAuthN.restoreSession();
   assert.notOk(KeratinAuthN.session(), "no session");
 });
 QUnit.test("existing session", function(assert) {
   writeCookie('authn', idToken({age: 1}));
-  KeratinAuthN.setCookieStore('authn');
+  KeratinAuthN.restoreSession();
   assert.ok(KeratinAuthN.session(), "session found");
 });
 QUnit.test("aging session", function(assert) {
@@ -163,7 +163,7 @@ QUnit.test("aging session", function(assert) {
   );
 
   writeCookie('authn', oldSession);
-  KeratinAuthN.setCookieStore('authn');
+  KeratinAuthN.restoreSession();
   assert.equal(KeratinAuthN.session(), oldSession, "session found is old but viable");
   setTimeout(function () {
     assert.equal(KeratinAuthN.session(), newSession, "session is updated");
@@ -179,7 +179,7 @@ QUnit.test("expired session", function(assert) {
   );
 
   writeCookie('authn', oldSession);
-  var promise = KeratinAuthN.setCookieStore('authn');
+  var promise = KeratinAuthN.restoreSession();
   assert.notOk(KeratinAuthN.session(), "found session is too old");
   return promise
     .then(function () {
@@ -194,7 +194,7 @@ QUnit.test("aging and revoked session", function(assert) {
     ""
   ]);
 
-  var promise = KeratinAuthN.setCookieStore('authn');
+  var promise = KeratinAuthN.restoreSession();
   assert.ok(KeratinAuthN.session(), "session is still possibly viable")
   return promise
     .then(refuteSuccess)
@@ -273,12 +273,13 @@ QUnit.test("failure", function(assert) {
 
 QUnit.module("logout", startServer);
 QUnit.test("success", function(assert) {
-  writeCookie('authn', idToken({age: 1}));
-  KeratinAuthN.setCookieStore('authn');
   this.server.respondWith('GET', 'https://authn.example.com/sessions/logout', '');
-
-  assert.ok(KeratinAuthN.session());
-  return KeratinAuthN.logout()
+  writeCookie('authn', idToken({age: 1}));
+  return KeratinAuthN.restoreSession()
+    .then(function () {
+      assert.ok(KeratinAuthN.session());
+    })
+    .then(KeratinAuthN.logout)
     .then(function() {
       assert.notOk(KeratinAuthN.session());
     });
