@@ -9,6 +9,13 @@ export function get<T>(url: string, data: StringMap): Promise<T> {
   });
 }
 
+export function del<T>(url: string): Promise<T> {
+  return jhr((xhr: XMLHttpRequest) => {
+    xhr.open("DELETE", url);
+    xhr.send();
+  });
+}
+
 export function post<T>(url: string, data: StringMap): Promise<T> {
   return jhr((xhr: XMLHttpRequest) => {
     xhr.open("POST", url);

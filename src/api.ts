@@ -3,7 +3,7 @@
  */
 
 import { Credentials, KeratinError } from './types';
-import { get, post } from "./verbs";
+import { get, post, del } from "./verbs";
 
 // TODO: extract debouncing
 let inflight: boolean = false;
@@ -43,17 +43,17 @@ export function isAvailable(username: string): Promise<boolean> {
 }
 
 export function refresh(): Promise<string> {
-  return get<TokenResponse>(url('/sessions/refresh'), {})
+  return get<TokenResponse>(url('/session/refresh'), {})
     .then((result) => result.id_token);
 }
 
 export function login(credentials: Credentials): Promise<string> {
-  return post<TokenResponse>(url('/sessions'), credentials)
+  return post<TokenResponse>(url('/session'), credentials)
     .then((result) => result.id_token);
 }
 
 export function logout(): Promise<void> {
-  return get<void>(url('/sessions/logout'), {});
+  return del<void>(url('/session'));
 }
 
 export function requestPasswordReset(username: string): Promise<{}> {

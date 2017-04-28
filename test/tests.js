@@ -158,7 +158,7 @@ QUnit.test("aging session", function(assert) {
   var oldSession = idToken({age: 3000});
   var newSession = idToken({age: 1});
 
-  this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh',
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
     jsonResult({id_token: newSession})
   );
 
@@ -174,7 +174,7 @@ QUnit.test("expired session", function(assert) {
   var oldSession = idToken({age: 9999});
   var newSession = idToken({age: 1});
 
-  this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh',
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
     jsonResult({id_token: newSession})
   );
 
@@ -188,7 +188,7 @@ QUnit.test("expired session", function(assert) {
 });
 QUnit.test("aging and revoked session", function(assert) {
   writeCookie('authn', idToken({age: 3000}));
-  this.server.respondWith('GET', 'https://authn.example.com/sessions/refresh', [
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh', [
     401,
     {},
     ""
@@ -205,7 +205,7 @@ QUnit.test("aging and revoked session", function(assert) {
 
 QUnit.module("login", startServer);
 QUnit.test("success", function(assert) {
-  this.server.respondWith('POST', 'https://authn.example.com/sessions',
+  this.server.respondWith('POST', 'https://authn.example.com/session',
     jsonResult({id_token: idToken({age: 1})})
   );
 
@@ -213,7 +213,7 @@ QUnit.test("success", function(assert) {
     .then(assertInstalledToken(assert));
 });
 QUnit.test("failure", function(assert) {
-  this.server.respondWith('POST', 'https://authn.example.com/sessions',
+  this.server.respondWith('POST', 'https://authn.example.com/session',
     jsonErrors({foo: 'bar'})
   );
 
@@ -273,7 +273,7 @@ QUnit.test("failure", function(assert) {
 
 QUnit.module("logout", startServer);
 QUnit.test("success", function(assert) {
-  this.server.respondWith('GET', 'https://authn.example.com/sessions/logout', '');
+  this.server.respondWith('DELETE', 'https://authn.example.com/session', '');
   writeCookie('authn', idToken({age: 1}));
   return KeratinAuthN.restoreSession()
     .then(function () {
