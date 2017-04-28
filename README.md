@@ -48,19 +48,25 @@ KeratinAuthN.setHost(url: string): void
 
 ```javascript
 // Configure AuthN to read and write from a named cookie for session persistence.
-// Returns a Promise that is fulfilled if a session was restored from an existing cookie.
-KeratinAuthN.setCookieStore(name: string): Promise<void>
+// Will not check for an existing cookie. See `restoreSession`.
+KeratinAuthN.setCookieStore(name: string): void
 ```
 
 ```javascript
 // Configure AuthN to read and write from localStorage for session persistence.
-// Returns a Promise that is fulfilled if a session was restored from localStorage.
-KeratinAuthN.setLocalStorageStore(name: string): Promise<void>
+// Will not check for an existing cookie. See `restoreSession`.
+KeratinAuthN.setLocalStorageStore(name: string): void
 ```
 
 ## API
 
 Use the following API methods to integrate your AuthN service:
+
+```javascript
+// check the configured storage for an existing session. refresh it if necessary.
+// the promise is fulfilled if a session is restored.
+KeratinAuthN.restoreSession(): Promise<void>
+```
 
 ```javascript
 // Get the session (as a JWT) found in AuthN's current session store.
@@ -80,7 +86,7 @@ KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>
 ```
 
 ```javascript
-// Returns a Promise that is fulfilled when the AuthN session has been terminated through an invisible iFrame.
+// Returns a Promise that is fulfilled when the AuthN session has been terminated.
 // Automatically ends the session in AuthN's current session store.
 KeratinAuthN.logout(): Promise<void>
 ```
