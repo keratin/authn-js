@@ -13,6 +13,15 @@ export default [
   {
     input: "./lib/index.js",
     output: {
+      file: "./dist/keratin-authn.umd.js",
+      format: "umd"
+    },
+    name: "KeratinAuthN",
+    plugins: []
+  },
+  {
+    input: "./lib/index.js",
+    output: {
       file: "./dist/keratin-authn.min.js",
       format: "umd"
     },
