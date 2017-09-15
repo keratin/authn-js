@@ -48,6 +48,7 @@ export default class SessionManager {
 
   endSession(): void {
     this.session = undefined;
+    clearTimeout(this.timeoutID);
     if (this.store) {
       this.store.delete();
     }
