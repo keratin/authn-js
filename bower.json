@@ -1,7 +1,7 @@
 {
   "name": "keratin-authn",
   "description": "Browser integration library for Keratin AuthN service.",
-  "main": "./dist/keratin-authn.js",
+  "main": "./dist/keratin-authn.umd.js",
   "authors": [
     "Lance Ivy"
   ],
