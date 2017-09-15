@@ -1,18 +1,13 @@
 {
-  "include": [
-    "./src/*",
-    "./types.d.ts"
+  "files": [
+    "src/index.ts"
   ],
   "compilerOptions": {
-    // output format
     "target": "es5",
-    "module": "commonjs",
-
-    // output files
+    "module": "es2015",
     "declaration": true,
-    "outDir": "./lib",
+    "outDir": "lib/",
 
-    // extra checks
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true
