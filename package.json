@@ -4,7 +4,7 @@
   "description": "Browser integration library for Keratin AuthN service.",
   "main": "./dist/keratin-authn.js",
   "module": "./dist/keratin-authn.module.js",
-  "types": "./dist/keratin-authn.d.ts",
+  "types": "./dist/index.d.ts",
   "author": "Lance Ivy",
   "license": "LGPL-3.0",
   "dependencies": {},
@@ -18,9 +18,9 @@
     "typescript": "^2.0.10"
   },
   "scripts": {
-    "build": "yarn clean && yarn compile && rollup -c",
+    "build": "yarn clean && yarn compile && cp lib/*.d.ts dist && rollup -c",
     "test": "gulp test",
     "compile": "yarn tsc",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist && mkdir dist"
   }
 }
