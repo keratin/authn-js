@@ -18,9 +18,9 @@
     "typescript": "^2.0.10"
   },
   "scripts": {
-    "build": "yarn clean && yarn compile && cp lib/*.d.ts dist && rollup -c",
+    "build": "yarn clean && yarn compile && rollup -c && cp lib/*.d.ts dist",
     "test": "gulp test",
     "compile": "yarn tsc",
-    "clean": "rm -rf dist && mkdir dist"
+    "clean": "rm -rf dist"
   }
 }
