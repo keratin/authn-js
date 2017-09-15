@@ -63,8 +63,8 @@ KeratinAuthN.setLocalStorageStore(name: string): void
 Use the following API methods to integrate your AuthN service:
 
 ```javascript
-// check the configured storage for an existing session. refresh it if necessary.
-// the promise is fulfilled if a session is restored.
+// Check the configured storage for an existing session. Refresh it if necessary.
+// The promise is fulfilled if a session is restored.
 KeratinAuthN.restoreSession(): Promise<void>
 ```
 
@@ -103,11 +103,18 @@ KeratinAuthN.requestPasswordReset(username: string): Promise<>
 ```
 
 ```javascript
-// Returns a Promise that is fulfilled when the password has been reset.
-// If the user is currently logged in, no token is necessary. If the user is logged out, a token generated as a result of `requestPasswordReset` must be provided.
+// Changes the password of the currently logged-in user.
+// Establishes a session.
+// May error with password validations, or an invalid currentPassword.
+KeratinAuthN.changePassword(obj: {password: string, currentPassword: string}): Promise<void>
+```
+
+```javascript
+// Resets the password of a user who is unable to log in.
+// Must be given a token generated through `requestPasswordReset`.
 // Establishes a session.
 // May error with password validations, or invalid/expired tokens.
-KeratinAuthN.changePassword(obj: {password: string, token?: string}): Promise<void>
+KeratinAuthN.resetPassword(obj: {password: string, token: string}): Promise<void>
 ```
 
 ## Development

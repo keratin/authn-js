@@ -2,12 +2,7 @@ import { Credentials, SessionStore } from './types';
 import SessionManager from './SessionManager';
 import CookieSessionStore from "./CookieSessionStore";
 import LocalStorageSessionStore from "./LocalStorageSessionStore";
-import {
-  signup as signupAPI,
-  login as loginAPI,
-  logout as logoutAPI,
-  changePassword as changePasswordAPI
-} from "./api";
+import * as API from './api';
 
 let manager = new SessionManager();
 function setStore(store: SessionStore): void {
@@ -31,22 +26,27 @@ export function session(): string | undefined {
 }
 
 export function signup(credentials: Credentials): Promise<void> {
-  return signupAPI(credentials)
+  return API.signup(credentials)
     .then(updateStore);
 }
 
 export function login(credentials: Credentials): Promise<void> {
-  return loginAPI(credentials)
+  return API.login(credentials)
     .then(updateStore);
 }
 
 export function logout(): Promise<void> {
-  return logoutAPI()
+  return API.logout()
     .then(() => manager.endSession());
 }
 
-export function changePassword(args: {password: string, token?: string}): Promise<void> {
-  return changePasswordAPI(args)
+export function changePassword(args: {password: string, currentPassword: string}): Promise<void> {
+  return API.changePassword(args)
+    .then(updateStore);
+}
+
+export function resetPassword(args: {password: string, token: string}): Promise<void> {
+  return API.resetPassword(args)
     .then(updateStore);
 }
 

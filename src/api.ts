@@ -60,7 +60,12 @@ export function requestPasswordReset(username: string): Promise<{}> {
   return get(url('/password/reset'), {username});
 }
 
-export function changePassword(args: {password: string, token?: string}): Promise<string> {
+export function changePassword(args: {password: string, currentPassword: string}): Promise<string> {
+  return post<TokenResponse>(url('/password'), args)
+    .then((result) => result.id_token);
+}
+
+export function resetPassword(args: {password: string, token: string}): Promise<string> {
   return post<TokenResponse>(url('/password'), args)
     .then((result) => result.id_token);
 }

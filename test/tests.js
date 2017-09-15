@@ -235,24 +235,14 @@ QUnit.test("success or failure", function(assert) {
 });
 
 QUnit.module("changePassword", startServer);
-QUnit.test("success with token", function(assert) {
+QUnit.test("success", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/password',
     jsonResult({id_token: idToken({age: 1})})
   );
 
   return KeratinAuthN.changePassword({
       password: 'new',
-      token: jwt({foo: 'bar'})
-    })
-    .then(assertInstalledToken(assert));
-});
-QUnit.test("success with session", function(assert) {
-  this.server.respondWith('POST', 'https://authn.example.com/password',
-    jsonResult({id_token: idToken({age: 1})})
-  );
-
-  return KeratinAuthN.changePassword({
-      password: 'new'
+      currentPassword: 'old'
     })
     .then(assertInstalledToken(assert));
 });
@@ -262,6 +252,33 @@ QUnit.test("failure", function(assert) {
   );
 
   return KeratinAuthN.changePassword({
+      password: 'new',
+      currentPassword: 'wrong'
+    })
+    .then(refuteSuccess(assert))
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
+});
+
+QUnit.module("resetPassword", startServer);
+QUnit.test("success", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/password',
+    jsonResult({id_token: idToken({age: 1})})
+  );
+
+  return KeratinAuthN.resetPassword({
+      password: 'new',
+      token: jwt({foo: 'bar'})
+    })
+    .then(assertInstalledToken(assert));
+});
+QUnit.test("failure", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/password',
+    jsonErrors({foo: 'bar'})
+  );
+
+  return KeratinAuthN.resetPassword({
       password: 'new',
       token: jwt({foo: 'bar'})
     })
