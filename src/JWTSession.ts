@@ -23,5 +23,9 @@ export default class JWTSession implements Session {
 }
 
 function jwt_claims(jwt: string): JWTClaims {
-  return JSON.parse(atob(jwt.split('.')[1]));
+  try {
+    return JSON.parse(atob(jwt.split('.')[1]));
+  } catch(e) {
+    throw 'Malformed JWT: invalid encoding'
+  }
 }
