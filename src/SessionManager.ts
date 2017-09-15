@@ -63,7 +63,7 @@ export default class SessionManager {
     const now = (new Date).getTime(); // in ms
 
     if (isNaN(refreshAt)) {
-      throw new Error("Malformed JWT, can not calculate refreshAt");
+      throw 'Malformed JWT: can not calculate refreshAt';
     }
 
     // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
