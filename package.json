@@ -18,6 +18,8 @@
     "typescript": "^2.0.10"
   },
   "scripts": {
+    "release": "yarn problems && yarn test && yarn build && yarn publish",
+    "problems": "yarn tsc --noEmit",
     "build": "yarn clean && yarn compile && rollup -c && cp lib/*.d.ts dist",
     "test": "gulp test",
     "compile": "yarn tsc",
