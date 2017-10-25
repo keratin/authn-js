@@ -12,6 +12,7 @@ export default class SessionManager {
   }
 
   restoreSession(): Promise<void> {
+    this.session = undefined;
     return new Promise<void>((fulfill, reject) => {
       // configuration error
       if (!this.store) {
@@ -22,27 +23,31 @@ export default class SessionManager {
       // nothing to restore
       const current = this.store.read();
       if (!current) {
-        this.session = undefined;
         reject();
         return;
       }
 
+      const now = Date.now(); // in ms
       const session = new JWTSession(current);
-      const now = (new Date).getTime();
+      const refreshAt = (session.iat() + session.halflife());
 
-      // session is viable
-      if (now < session.exp()) {
-        this.session = session;
-        this.maintain();
-        fulfill();
-      // session is expired (if we trust clocks)
-      } else {
-        // NOTE: if the client's clock is quite wrong, then each page load will appear logged out
-        // until a refresh takes over the timing with setInterval.
-        this.session = undefined;
-        this.refresh()
-          .then(fulfill, reject);
+      if (isNaN(refreshAt)) {
+        throw 'Malformed JWT: can not calculate refreshAt';
       }
+
+      // session looks to be aging or expired.
+      //
+      // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
+      // refreshing their session on pretty much every page load.
+      if (now >= refreshAt || now < session.iat()) {
+        this.refresh().then(fulfill, reject);
+        return;
+      }
+
+      // session looks good. keep an eye on it.
+      this.session = session;
+      this.scheduleRefresh(refreshAt - now);
+      fulfill();
     });
   }
 
@@ -51,27 +56,6 @@ export default class SessionManager {
     clearTimeout(this.timeoutID);
     if (this.store) {
       this.store.delete();
-    }
-  }
-
-  private maintain(): void {
-    if (!this.session) {
-      return;
-    }
-
-    const refreshAt = (this.session.iat() + this.session.halflife());
-    const now = (new Date).getTime(); // in ms
-
-    if (isNaN(refreshAt)) {
-      throw 'Malformed JWT: can not calculate refreshAt';
-    }
-
-    // NOTE: if the client's clock is quite wrong, we'll end up being pretty aggressive about
-    // maintaining their session on pretty much every page load.
-    if (now < this.session.iat() || now >= refreshAt) {
-      this.refresh();
-    } else {
-      this.scheduleRefresh(refreshAt - now);
     }
   }
 

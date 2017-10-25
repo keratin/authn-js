@@ -145,45 +145,33 @@ QUnit.test("name is taken", function(assert) {
 QUnit.module("restoreSession", startServer);
 QUnit.test("no existing session", function(assert) {
   deleteCookie('authn');
-  KeratinAuthN.restoreSession();
-  assert.notOk(KeratinAuthN.session(), "no session");
+
+  return KeratinAuthN.restoreSession()
+    .then(refuteSuccess(assert))
+    .catch(function () {
+      assert.notOk(KeratinAuthN.session(), "no session");
+    });
 });
 QUnit.test("existing session", function(assert) {
   writeCookie('authn', idToken({age: 1}));
-  KeratinAuthN.restoreSession();
-  assert.ok(KeratinAuthN.session(), "session found");
+
+  return KeratinAuthN.restoreSession()
+    .then(function () {
+      assert.ok(KeratinAuthN.session(), "session found");
+    });
 });
 QUnit.test("aging session", function(assert) {
-  var done = assert.async();
   var oldSession = idToken({age: 3000});
   var newSession = idToken({age: 1});
 
+  writeCookie('authn', oldSession);
   this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
     jsonResult({id_token: newSession})
   );
 
-  writeCookie('authn', oldSession);
-  KeratinAuthN.restoreSession();
-  assert.equal(KeratinAuthN.session(), oldSession, "session found is old but viable");
-  setTimeout(function () {
-    assert.equal(KeratinAuthN.session(), newSession, "session is updated");
-    done();
-  }, 10);
-});
-QUnit.test("expired session", function(assert) {
-  var oldSession = idToken({age: 9999});
-  var newSession = idToken({age: 1});
-
-  this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
-    jsonResult({id_token: newSession})
-  );
-
-  writeCookie('authn', oldSession);
-  var promise = KeratinAuthN.restoreSession();
-  assert.notOk(KeratinAuthN.session(), "found session is too old");
-  return promise
+  return KeratinAuthN.restoreSession()
     .then(function () {
-      assert.equal(KeratinAuthN.session(), newSession, "session re-established");
+      assert.equal(KeratinAuthN.session(), newSession, "session is updated");
     });
 });
 QUnit.test("aging and revoked session", function(assert) {
@@ -194,9 +182,35 @@ QUnit.test("aging and revoked session", function(assert) {
     ""
   ]);
 
-  var promise = KeratinAuthN.restoreSession();
-  assert.ok(KeratinAuthN.session(), "session is still possibly viable")
-  return promise
+  return KeratinAuthN.restoreSession()
+    .then(refuteSuccess(assert))
+    .catch(function () {
+      assert.notOk(KeratinAuthN.session(), "session was revoked");
+    });
+});
+QUnit.test("expired session", function(assert) {
+  var oldSession = idToken({age: 9999});
+  var newSession = idToken({age: 1});
+
+  writeCookie('authn', oldSession);
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
+    jsonResult({id_token: newSession})
+  );
+
+  return KeratinAuthN.restoreSession()
+    .then(function () {
+      assert.equal(KeratinAuthN.session(), newSession, "session re-established");
+    });
+});
+QUnit.test("expired and revoked session", function(assert) {
+  writeCookie('authn', idToken({age: 9999}));
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh', [
+    401,
+    {},
+    ""
+  ]);
+
+  return KeratinAuthN.restoreSession()
     .then(refuteSuccess(assert))
     .catch(function () {
       assert.notOk(KeratinAuthN.session(), "session was revoked");
@@ -204,6 +218,7 @@ QUnit.test("aging and revoked session", function(assert) {
 });
 QUnit.test("malformed JWT", function(assert) {
   writeCookie('authn', 'invalid');
+
   return KeratinAuthN.restoreSession()
     .then(refuteSuccess(assert))
     .catch(function (e) {
