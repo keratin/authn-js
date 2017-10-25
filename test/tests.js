@@ -197,7 +197,7 @@ QUnit.test("aging and revoked session", function(assert) {
   var promise = KeratinAuthN.restoreSession();
   assert.ok(KeratinAuthN.session(), "session is still possibly viable")
   return promise
-    .then(refuteSuccess)
+    .then(refuteSuccess(assert))
     .catch(function () {
       assert.notOk(KeratinAuthN.session(), "session was revoked");
     });
@@ -205,7 +205,7 @@ QUnit.test("aging and revoked session", function(assert) {
 QUnit.test("malformed JWT", function(assert) {
   writeCookie('authn', 'invalid');
   return KeratinAuthN.restoreSession()
-    .then(refuteSuccess)
+    .then(refuteSuccess(assert))
     .catch(function (e) {
       assert.equal(e, 'Malformed JWT: invalid encoding');
     });

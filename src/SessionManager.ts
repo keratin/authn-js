@@ -94,9 +94,8 @@ export default class SessionManager {
       (errors) => {
         if (errors[0] && errors[0].message === 'Unauthorized') {
           this.endSession();
-        } else {
-          throw errors;
         }
+        throw errors;
       }
     );
   }
