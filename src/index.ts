@@ -1,7 +1,8 @@
 import { Credentials, SessionStore } from './types';
 import SessionManager from './SessionManager';
 import CookieSessionStore from "./CookieSessionStore";
-import LocalStorageSessionStore from "./LocalStorageSessionStore";
+import MemorySessionStore from './MemorySessionStore';
+import LocalStorageSessionStore, {localStorageSupported} from "./LocalStorageSessionStore";
 import * as API from './api';
 
 let manager = new SessionManager();
@@ -18,7 +19,9 @@ export function setCookieStore(sessionName: string): void {
 }
 
 export function setLocalStorageStore(sessionName: string): void {
-  setStore(new LocalStorageSessionStore(sessionName));
+  localStorageSupported() ?
+    setStore(new LocalStorageSessionStore(sessionName)) :
+    setStore(new MemorySessionStore);
 }
 
 export function session(): string | undefined {

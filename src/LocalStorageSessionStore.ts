@@ -1,5 +1,15 @@
 import { SessionStore } from "./types";
-import JWTSession from "./JWTSession";
+
+export function localStorageSupported(): boolean {
+  const str = 'keratin-authn-test';
+  try {
+    window.localStorage.setItem(str, str);
+    window.localStorage.removeItem(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 export default class LocalStorageSessionStore implements SessionStore {
   private readonly sessionName: string;
