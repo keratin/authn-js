@@ -8,13 +8,11 @@ This library provides utilities to help integrate with AuthN from the browser. I
 
 ## Persistence Options
 
-KeratinAuthN offers three persistence modes, each useful to a different type of application:
+KeratinAuthN offers two persistence modes, each useful to a different type of application:
 
-1. **Memory:** By default, KeratinAuthN will only track a login in memory. This might be useful for single-page applications where the user can be logged out on each new page load.
+1. **LocalStorage:** Configuring `setLocalStorageStore(name: string)` adds localStorage-backed persistence. This is useful for client-side applications that do not rely on server-side rendering to generate a personalized page. The client is responsible for reading from `KeratinAuthN.session()` and adding the session token to any backend API requests, probably as a header.
 
-2. **LocalStorage:** Configuring `setLocalStorageStore(name: string)` adds localStorage-backed persistence. This is useful for client-side applications that do not rely on server-side rendering to generate a personalized page. The client is responsible for reading from `KeratinAuthN.session()` and adding the session token to any backend API requests, probably as a header.
-
-3. **Cookie:** Configuring `setCookieStore(name: string)` adds support for cookie-backed persistence. This is useful for applications that rely on server-side rendering, but requires the application to implement CSRF protection mechanisms.
+2. **Cookie:** Configuring `setCookieStore(name: string)` adds support for cookie-backed persistence. This is useful for applications that rely on server-side rendering, but also requires the application to implement CSRF protection mechanisms.
 
 ## Installation
 
@@ -53,7 +51,9 @@ KeratinAuthN.setCookieStore(name: string): void
 ```
 
 ```javascript
-// Configure AuthN to read and write from localStorage for session persistence.
+// Configure AuthN to read and write from localStorage for session persistence. In private browsing
+// mode with old versions of Safari and Android Browser (not Chrome), this will fall back to a
+// simple memory storage that is lost on page refresh.
 // Will not check for an existing cookie. See `restoreSession`.
 KeratinAuthN.setLocalStorageStore(name: string): void
 ```
@@ -69,7 +69,8 @@ KeratinAuthN.restoreSession(): Promise<void>
 ```
 
 ```javascript
-// Get the session (as a JWT) found in AuthN's current session store.
+// Get the session (as a JWT) found in AuthN's current session store. There is no guarantee this
+// session will be valid or fresh, especially on page load while restoreSession is working.
 KeratinAuthN.session(): string | undefined
 ```
 
