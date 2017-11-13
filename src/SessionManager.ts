@@ -5,14 +5,19 @@ import JWTSession from "./JWTSession";
 export default class SessionManager {
   private store: SessionStore | undefined;
   private timeoutID: number;
-  session: JWTSession | undefined;
+
+  sessionToken(): string | undefined {
+    if (!this.store) {
+      return undefined;
+    }
+    return this.store.read();
+  }
 
   setStore(store: SessionStore): void {
     this.store = store;
   }
 
   restoreSession(): Promise<void> {
-    this.session = undefined;
     return new Promise<void>((fulfill, reject) => {
       // configuration error
       if (!this.store) {
@@ -21,17 +26,18 @@ export default class SessionManager {
       }
 
       // nothing to restore
-      const current = this.store.read();
-      if (!current) {
+      const token = this.sessionToken();
+      if (!token) {
         reject();
         return;
       }
 
       const now = Date.now(); // in ms
-      const session = new JWTSession(current);
+      const session = new JWTSession(token);
       const refreshAt = (session.iat() + session.halflife());
 
       if (isNaN(refreshAt)) {
+        this.store.delete();
         throw 'Malformed JWT: can not calculate refreshAt';
       }
 
@@ -45,14 +51,12 @@ export default class SessionManager {
       }
 
       // session looks good. keep an eye on it.
-      this.session = session;
       this.scheduleRefresh(refreshAt - now);
       fulfill();
     });
   }
 
   endSession(): void {
-    this.session = undefined;
     clearTimeout(this.timeoutID);
     if (this.store) {
       this.store.delete();
@@ -63,8 +67,8 @@ export default class SessionManager {
     if (this.store) {
       this.store.update(id_token);
     }
-    this.session = new JWTSession(id_token);
-    this.scheduleRefresh(this.session.halflife());
+    const session = new JWTSession(id_token);
+    this.scheduleRefresh(session.halflife());
   }
 
   private scheduleRefresh(delay: number): void {

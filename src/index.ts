@@ -25,7 +25,7 @@ export function setLocalStorageStore(sessionName: string): void {
 }
 
 export function session(): string | undefined {
-  return manager.session ? manager.session.token : undefined;
+  return manager.sessionToken();
 }
 
 export function signup(credentials: Credentials): Promise<void> {
