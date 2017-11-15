@@ -4,7 +4,18 @@ import JWTSession from "./JWTSession";
 
 export default class SessionManager {
   private store: SessionStore | undefined;
-  private timeoutID: number;
+  private refreshAt: number | undefined;
+  private timeoutID: number | undefined;
+
+  // immediately hook into visibility changes. strange things can happen to timeouts while a device
+  // is asleep, so we want to reset them.
+  constructor() {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.scheduleRefresh();
+      };
+    });
+  }
 
   setStore(store: SessionStore): void {
     this.store = store;
@@ -22,18 +33,25 @@ export default class SessionManager {
   update(id_token: string): void {
     if (!this.store) { return; }
     this.store.update(id_token);
+
     const session = new JWTSession(id_token);
-    this.scheduleRefresh(session.halflife());
+    this.refreshAt = Date.now() + session.halflife();
+    this.scheduleRefresh();
   }
 
   // delete from the store
   endSession(): void {
-    clearTimeout(this.timeoutID);
+    this.refreshAt = undefined;
+    if (this.timeoutID) {
+      clearTimeout(this.timeoutID);
+    }
     if (this.store) {
       this.store.delete();
     }
   }
 
+  // restoreSession runs an immediate token refresh and fulfills a promise if the session looks
+  // alive. note that this is no guarantee, because of potentially bad client clocks.
   restoreSession(): Promise<void> {
     return new Promise<void>((fulfill, reject) => {
       // configuration error
@@ -69,14 +87,22 @@ export default class SessionManager {
       }
 
       // session looks good. keep an eye on it.
-      this.scheduleRefresh(refreshAt - now);
+      this.refreshAt = refreshAt;
+      this.scheduleRefresh();
       fulfill();
     });
   }
 
-  private scheduleRefresh(delay: number): void {
-    clearTimeout(this.timeoutID);
-    this.timeoutID = setTimeout(() => this.refresh(), delay);
+  private scheduleRefresh(): void {
+    if (this.timeoutID) {
+      clearTimeout(this.timeoutID);
+    }
+    if (this.refreshAt) {
+      this.timeoutID = setTimeout(
+        () => this.refresh(),
+        this.refreshAt - Date.now()
+      );
+    }
   }
 
   private refresh(): Promise<void> {
