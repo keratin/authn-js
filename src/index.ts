@@ -30,12 +30,12 @@ export function session(): string | undefined {
 
 export function signup(credentials: Credentials): Promise<void> {
   return API.signup(credentials)
-    .then(updateStore);
+    .then((token) => manager.update(token));
 }
 
 export function login(credentials: Credentials): Promise<void> {
   return API.login(credentials)
-    .then(updateStore);
+    .then((token) => manager.update(token));
 }
 
 export function logout(): Promise<void> {
@@ -45,12 +45,12 @@ export function logout(): Promise<void> {
 
 export function changePassword(args: {password: string, currentPassword: string}): Promise<void> {
   return API.changePassword(args)
-    .then(updateStore);
+    .then((token) => manager.update(token));
 }
 
 export function resetPassword(args: {password: string, token: string}): Promise<void> {
   return API.resetPassword(args)
-    .then(updateStore);
+    .then((token) => manager.update(token));
 }
 
 // export remaining API methods unmodified
@@ -59,7 +59,3 @@ export {
   isAvailable,
   requestPasswordReset
 } from "./api";
-
-function updateStore(token: string) {
-  manager.updateAndMaintain(token);
-}

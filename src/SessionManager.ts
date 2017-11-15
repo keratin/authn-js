@@ -6,6 +6,11 @@ export default class SessionManager {
   private store: SessionStore | undefined;
   private timeoutID: number;
 
+  setStore(store: SessionStore): void {
+    this.store = store;
+  }
+
+  // read from the store
   sessionToken(): string | undefined {
     if (!this.store) {
       return undefined;
@@ -13,8 +18,20 @@ export default class SessionManager {
     return this.store.read();
   }
 
-  setStore(store: SessionStore): void {
-    this.store = store;
+  // write to the store
+  update(id_token: string): void {
+    if (!this.store) { return; }
+    this.store.update(id_token);
+    const session = new JWTSession(id_token);
+    this.scheduleRefresh(session.halflife());
+  }
+
+  // delete from the store
+  endSession(): void {
+    clearTimeout(this.timeoutID);
+    if (this.store) {
+      this.store.delete();
+    }
   }
 
   restoreSession(): Promise<void> {
@@ -56,21 +73,6 @@ export default class SessionManager {
     });
   }
 
-  endSession(): void {
-    clearTimeout(this.timeoutID);
-    if (this.store) {
-      this.store.delete();
-    }
-  }
-
-  updateAndMaintain(id_token: string): void {
-    if (this.store) {
-      this.store.update(id_token);
-    }
-    const session = new JWTSession(id_token);
-    this.scheduleRefresh(session.halflife());
-  }
-
   private scheduleRefresh(delay: number): void {
     clearTimeout(this.timeoutID);
     this.timeoutID = setTimeout(() => this.refresh(), delay);
@@ -78,7 +80,7 @@ export default class SessionManager {
 
   private refresh(): Promise<void> {
     return refreshAPI().then(
-      (id_token) => this.updateAndMaintain(id_token),
+      (id_token) => this.update(id_token),
       (errors) => {
         if (errors[0] && errors[0].message === 'Unauthorized') {
           this.endSession();
