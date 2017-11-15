@@ -38,14 +38,14 @@ export default class SessionManager {
     return new Promise<void>((fulfill, reject) => {
       // configuration error
       if (!this.store) {
-        reject();
+        reject('No session storage available.');
         return;
       }
 
       // nothing to restore
       const token = this.sessionToken();
       if (!token) {
-        reject();
+        reject('No session.');
         return;
       }
 
@@ -55,7 +55,8 @@ export default class SessionManager {
 
       if (isNaN(refreshAt)) {
         this.store.delete();
-        throw 'Malformed JWT: can not calculate refreshAt';
+        reject('Malformed JWT: can not calculate refreshAt');
+        return;
       }
 
       // session looks to be aging or expired.
