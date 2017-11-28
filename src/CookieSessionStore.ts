@@ -5,11 +5,13 @@ export default class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;
   private readonly secureFlag: string;
   private readonly sessionPath: string;
+  private readonly sessionDomain: string;
 
-  constructor(cookieName: string, path: string) {
+  constructor(cookieName: string, path: string, domain: string) {
     this.sessionName = cookieName;
-    this.sessionPath = '; path=' + path +';';
+    this.sessionPath = '; path=' + path;
     this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
+    this.sessionDomain = '; domain=' + domain;
   }
 
   read(): string | undefined {
@@ -17,7 +19,7 @@ export default class CookieSessionStore implements SessionStore {
   }
 
   update(val: string) {
-  document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.sessionPath}`;
+  document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.sessionPath}${this.sessionDomain}`;
   }
 
   delete() {

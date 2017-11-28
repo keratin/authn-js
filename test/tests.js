@@ -1,6 +1,6 @@
 QUnit.begin(function () {
   KeratinAuthN.setHost('https://authn.example.com');
-  KeratinAuthN.setCookieStore('authn');
+  KeratinAuthN.setCookieStore('authn', '/', 'localhost');
   writeCookie('hello', 'world');
   writeCookie('foo', 'bar');
 });

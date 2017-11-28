@@ -14,8 +14,8 @@ export function restoreSession(): Promise<void> {
   return manager.restoreSession();
 }
 
-export function setCookieStore(sessionName: string, path: string): void {
-  setStore(new CookieSessionStore(sessionName, path));
+export function setCookieStore(sessionName: string, path: string, domain: string): void {
+  setStore(new CookieSessionStore(sessionName, path, domain));
 }
 
 export function setLocalStorageStore(sessionName: string): void {
