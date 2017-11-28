@@ -4,9 +4,11 @@ import JWTSession from "./JWTSession";
 export default class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;
   private readonly secureFlag: string;
+  private readonly sessionPath: string;
 
-  constructor(cookieName: string) {
+  constructor(cookieName: string, path: string) {
     this.sessionName = cookieName;
+    this.sessionPath = '; path=' + path +';';
     this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
   }
 
@@ -15,7 +17,7 @@ export default class CookieSessionStore implements SessionStore {
   }
 
   update(val: string) {
-    document.cookie = `${this.sessionName}=${val}${this.secureFlag}`;
+  document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.sessionPath}`;
   }
 
   delete() {
