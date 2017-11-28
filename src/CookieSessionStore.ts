@@ -19,10 +19,11 @@ export default class CookieSessionStore implements SessionStore {
   }
 
   update(val: string) {
-  document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.sessionPath}${this.sessionDomain}`;
+    document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.sessionPath}${this.sessionDomain}`;
   }
 
   delete() {
-    document.cookie = this.sessionName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    var expires:string = "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+    document.cookie = `${this.sessionName}${expires}${this.sessionPath}${this.sessionDomain}`;
   }
 }
