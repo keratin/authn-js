@@ -38,8 +38,19 @@ export function signup(credentials: Credentials): Promise<string> {
   });
 }
 
+function isTaken(e: KeratinError) {
+  return e.field === 'username' && e.message === 'TAKEN';
+}
+
 export function isAvailable(username: string): Promise<boolean> {
-  return get<boolean>(url('/accounts/available'), {username});
+  return get<boolean>(url('/accounts/available'), {username})
+    .then((bool) => bool)
+    .catch((e: Error | KeratinError[]) => {
+      if (!(e instanceof Error) && e.some(isTaken)) {
+        return false;
+      }
+      throw e;
+    });
 }
 
 export function refresh(): Promise<string> {

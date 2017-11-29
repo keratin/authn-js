@@ -93,8 +93,8 @@ KeratinAuthN.logout(): Promise<void>
 ```
 
 ```javascript
-// Returns a Promise that is fulfilled when the username is available and rejected when
-// it has already been claimed.
+// Returns a Promise that is fulfilled with a boolean indicating whether the username is available.
+// The promise rejects when availability can not be determined, as with network errors.
 KeratinAuthN.isAvailable(username: string): Promise<boolean>
 ```
 
