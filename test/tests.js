@@ -136,9 +136,8 @@ QUnit.test("name is taken", function(assert) {
   );
 
   return KeratinAuthN.isAvailable('test')
-    .then(refuteSuccess(assert))
-    .catch(function(errors) {
-      assert.deepEqual(errors, [{field: 'username', message: 'TAKEN'}]);
+    .then(function (availability) {
+      assert.notOk(availability, "is taken")
     });
 });
 
