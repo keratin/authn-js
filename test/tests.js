@@ -225,6 +225,21 @@ QUnit.test("malformed JWT", function(assert) {
     });
 });
 
+QUnit.module("importSession", startServer);
+QUnit.test("no existing session", function(assert) {
+  deleteCookie('authn');
+  var newSession = idToken({age: 1});
+
+  this.server.respondWith('GET', 'https://authn.example.com/session/refresh',
+    jsonResult({id_token: newSession})
+  );
+
+  return KeratinAuthN.importSession()
+    .then(function () {
+      assert.equal(KeratinAuthN.session(), newSession, "session re-established");
+    });
+});
+
 QUnit.module("login", startServer);
 QUnit.test("success", function(assert) {
   this.server.respondWith('POST', 'https://authn.example.com/session',

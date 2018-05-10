@@ -93,6 +93,18 @@ export default class SessionManager {
     });
   }
 
+  refresh(): Promise<void> {
+    return refreshAPI().then(
+      (id_token) => this.update(id_token),
+      (errors) => {
+        if (errors[0] && errors[0].message === 'Unauthorized') {
+          this.endSession();
+        }
+        throw errors;
+      }
+    );
+  }
+
   private scheduleRefresh(): void {
     if (this.timeoutID) {
       clearTimeout(this.timeoutID);
@@ -103,17 +115,5 @@ export default class SessionManager {
         this.refreshAt - Date.now()
       );
     }
-  }
-
-  private refresh(): Promise<void> {
-    return refreshAPI().then(
-      (id_token) => this.update(id_token),
-      (errors) => {
-        if (errors[0] && errors[0].message === 'Unauthorized') {
-          this.endSession();
-        }
-        throw errors;
-      }
-    );
   }
 }
