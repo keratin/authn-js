@@ -14,6 +14,10 @@ export function restoreSession(): Promise<void> {
   return manager.restoreSession();
 }
 
+export function importSession(): Promise<void> {
+  return manager.refresh();
+}
+
 export function setCookieStore(sessionName: string): void {
   setStore(new CookieSessionStore(sessionName));
 }
