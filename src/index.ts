@@ -57,9 +57,15 @@ export function resetPassword(args: {password: string, token: string}): Promise<
     .then((token) => manager.update(token));
 }
 
+export function passwordlessLogin(args: {token: string}): Promise<void> {
+  return API.passwordlessLogin(args)
+    .then((token) => manager.update(token));
+}
+
 // export remaining API methods unmodified
 export {
   setHost,
   isAvailable,
-  requestPasswordReset
+  requestPasswordReset,
+  requestPasswordlessToken
 } from "./api";

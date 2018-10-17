@@ -81,6 +81,15 @@ export function resetPassword(args: {password: string, token: string}): Promise<
     .then((result) => result.id_token);
 }
 
+export function requestPasswordlessToken(username: string): Promise<{}> {
+  return get(url('/passwordless/token'), {username});
+}
+
+export function passwordlessLogin(args: {token: string}): Promise<string> {
+  return post<TokenResponse>(url('/passwordless/login'), args)
+    .then((result) => result.id_token);
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";

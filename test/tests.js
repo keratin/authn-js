@@ -338,3 +338,36 @@ QUnit.test("success", function(assert) {
       assert.notOk(KeratinAuthN.session());
     });
 });
+
+QUnit.module("requestPasswordlessToken", startServer);
+QUnit.test("success or failure", function(assert) {
+  this.server.respondWith('GET', 'https://authn.example.com/passwordless/token?username=test', '');
+
+  return KeratinAuthN.requestPasswordlessToken('test')
+    .then(function () {
+      assert.ok(true, "should always succeed")
+    })
+});
+
+QUnit.module("passwordlessLogin", startServer);
+QUnit.test("success", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/passwordless/login',
+    jsonResult({id_token: idToken({age: 1})})
+  );
+
+  return KeratinAuthN.passwordlessLogin({token: 'test'})
+    .then(assertInstalledToken(assert));
+});
+QUnit.test("failure", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/passwordless/login',
+    jsonErrors({foo: 'bar'})
+  );
+
+  return KeratinAuthN.passwordlessLogin({
+      token: jwt({foo: 'bar'})
+    })
+    .then(refuteSuccess(assert))
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
+});
