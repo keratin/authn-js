@@ -81,6 +81,15 @@ export function resetPassword(args: {password: string, token: string}): Promise<
     .then((result) => result.id_token);
 }
 
+export function requestSessionToken(username: string): Promise<{}> {
+  return get(url('/session/token'), {username});
+}
+
+export function sessionTokenLogin(credentials: {token: string}): Promise<string> {
+  return post<TokenResponse>(url('/session/token'), credentials)
+    .then((result) => result.id_token);
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";

@@ -338,3 +338,36 @@ QUnit.test("success", function(assert) {
       assert.notOk(KeratinAuthN.session());
     });
 });
+
+QUnit.module("requestSessionToken", startServer);
+QUnit.test("success or failure", function(assert) {
+  this.server.respondWith('GET', 'https://authn.example.com/session/token?username=test', '');
+
+  return KeratinAuthN.requestSessionToken('test')
+    .then(function () {
+      assert.ok(true, "should always succeed")
+    })
+});
+
+QUnit.module("sessionTokenLogin", startServer);
+QUnit.test("success", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/session/token',
+    jsonResult({id_token: idToken({age: 1})})
+  );
+
+  return KeratinAuthN.sessionTokenLogin({token: 'test'})
+    .then(assertInstalledToken(assert));
+});
+QUnit.test("failure", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/session/token',
+    jsonErrors({foo: 'bar'})
+  );
+
+  return KeratinAuthN.sessionTokenLogin({
+      token: jwt({foo: 'bar'})
+    })
+    .then(refuteSuccess(assert))
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{field: 'foo', message: 'bar'}]);
+    });
+});
