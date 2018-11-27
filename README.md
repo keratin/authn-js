@@ -125,6 +125,19 @@ KeratinAuthN.changePassword(obj: {password: string, currentPassword: string}): P
 KeratinAuthN.resetPassword(obj: {password: string, token: string}): Promise<void>
 ```
 
+```javascript
+// Requests a session token for the given username and _always claims to succeed_.
+// If this truly succeeds, AuthN will send a session token to your server for email delivery.
+KeratinAuthN.requestSessionToken(username: string): Promise<>
+```
+
+```javascript
+// Establishes a session with the session token.
+// May error with invalid/expired tokens, or if a login (username/password) is made after request the
+// token.
+KeratinAuthN.sessionTokenLogin(obj: {token: string}): Promise<void>
+```
+
 ## Development
 
 Embrace the TypeScript!
