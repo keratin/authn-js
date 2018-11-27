@@ -339,31 +339,31 @@ QUnit.test("success", function(assert) {
     });
 });
 
-QUnit.module("requestPasswordlessToken", startServer);
+QUnit.module("requestSessionToken", startServer);
 QUnit.test("success or failure", function(assert) {
-  this.server.respondWith('GET', 'https://authn.example.com/passwordless/token?username=test', '');
+  this.server.respondWith('GET', 'https://authn.example.com/session/token?username=test', '');
 
-  return KeratinAuthN.requestPasswordlessToken('test')
+  return KeratinAuthN.requestSessionToken('test')
     .then(function () {
       assert.ok(true, "should always succeed")
     })
 });
 
-QUnit.module("passwordlessLogin", startServer);
+QUnit.module("sessionTokenLogin", startServer);
 QUnit.test("success", function(assert) {
-  this.server.respondWith('POST', 'https://authn.example.com/passwordless/login',
+  this.server.respondWith('POST', 'https://authn.example.com/session/token',
     jsonResult({id_token: idToken({age: 1})})
   );
 
-  return KeratinAuthN.passwordlessLogin({token: 'test'})
+  return KeratinAuthN.sessionTokenLogin({token: 'test'})
     .then(assertInstalledToken(assert));
 });
 QUnit.test("failure", function(assert) {
-  this.server.respondWith('POST', 'https://authn.example.com/passwordless/login',
+  this.server.respondWith('POST', 'https://authn.example.com/session/token',
     jsonErrors({foo: 'bar'})
   );
 
-  return KeratinAuthN.passwordlessLogin({
+  return KeratinAuthN.sessionTokenLogin({
       token: jwt({foo: 'bar'})
     })
     .then(refuteSuccess(assert))
