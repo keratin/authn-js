@@ -1,5 +1,5 @@
-import { StringMap } from "./types";
-import { KeratinError } from "./types";
+import {StringMap} from "./types";
+import {KeratinError} from "./types";
 import formData from "./formData";
 
 export function get<T>(url: string, data: StringMap): Promise<T> {
@@ -33,7 +33,7 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
     xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
       if (xhr.readyState == XMLHttpRequest.DONE) {
-        const data: {result?: T, errors?: KeratinError[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
+        const data = maybeParseJSON<T>(xhr.responseText);
 
         if (data.result) {
           fulfill(data.result);
@@ -51,4 +51,15 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
     };
     sender(xhr);
   });
+}
+
+function maybeParseJSON<T>(response: string): { result?: T, errors?: KeratinError[] } {
+  if (response === '') {
+    return {}
+  }
+  try {
+    return JSON.parse(response)
+  } catch (err) {
+    return {errors: [{message: `HTTP response '${response}' is not JSON as expected: ${err}`}]}
+  }
 }
