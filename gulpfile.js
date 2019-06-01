@@ -1,7 +1,6 @@
 const { series } = require('gulp');
 var exec = require('child_process').exec;
-var gulp = require('gulp');
-var qunit = require('gulp-qunit');
+var qunit = require('node-qunit-phantomjs');
 
 function build(cb) {
   exec('yarn build', function (err, stdout, stderr) {
@@ -12,8 +11,8 @@ function build(cb) {
 }
 
 function test(cb) {
-  return gulp.src('./test/runner.html')
-    .pipe(qunit());
+  qunit('./test/runner.html');
+  cb();
 }
 
 exports.build = build;
