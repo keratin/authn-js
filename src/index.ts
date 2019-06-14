@@ -18,8 +18,8 @@ export function importSession(): Promise<void> {
   return manager.refresh();
 }
 
-export function setCookieStore(sessionName: string): void {
-  setStore(new CookieSessionStore(sessionName));
+export function setCookieStore(sessionName: string, domainName?: string): void {
+  setStore(new CookieSessionStore(sessionName, domainName));
 }
 
 export function setLocalStorageStore(sessionName: string): void {
