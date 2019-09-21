@@ -10,11 +10,13 @@ export default class SessionManager {
   // immediately hook into visibility changes. strange things can happen to timeouts while a device
   // is asleep, so we want to reset them.
   constructor() {
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        this.scheduleRefresh();
-      };
-    });
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.scheduleRefresh();
+        };
+      });
+    }
   }
 
   setStore(store: SessionStore): void {
