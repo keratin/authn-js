@@ -12,7 +12,7 @@ KeratinAuthN offers two persistence modes, each useful to a different type of ap
 
 1. **LocalStorage:** Configuring `setLocalStorageStore(name: string)` adds localStorage-backed persistence. This is useful for client-side applications that do not rely on server-side rendering to generate a personalized page. The client is responsible for reading from `KeratinAuthN.session()` and adding the session token to any backend API requests, probably as a header.
 
-2. **Cookie:** Configuring `setCookieStore(name: string, opts?: object)` adds support for cookie-backed persistence. This is useful for applications that rely on server-side rendering, but also requires the application to implement CSRF protection mechanisms. By passing an additional object to `setCookieStore(...)` it is also possible to configure the cookies path and SameSite attributes. For example, `setCookieStore("authn-token", {path: "/admin", sameSite: "Strict"})` will restrict the cookie to `/admin` and will exclude it from third-party top-level navigations.
+2. **Cookie:** Configuring `setCookieStore(name: string, opts?: object)` adds support for cookie-backed persistence. This is useful for applications that rely on server-side rendering, but also requires the application to implement CSRF protection mechanisms. By passing an additional object to `setCookieStore(...)` it is also possible to configure the cookies path and SameSite attributes. For example, `setCookieStore("authn-token", {path: "/admin", sameSite: "Strict"})` will restrict the cookie to `/admin` and will exclude it from third-party top-level navigations. If `sameSite` is not provided the browser will choose it's default value.
 
 ## Installation
 
@@ -47,7 +47,7 @@ KeratinAuthN.setHost(url: string): void
 ```javascript
 // Configure AuthN to read and write from a named cookie for session persistence.
 // Will not check for an existing cookie. See `restoreSession`.
-KeratinAuthN.setCookieStore(name: string, opts?: {path?: string, sameSite?: string}): void
+KeratinAuthN.setCookieStore(name: string, opts?: {path?: string, sameSite?: 'Lax' | 'Strict' | 'None'}): void
 ```
 
 ```javascript

@@ -2,7 +2,7 @@ import { SessionStore } from "./types";
 
 export interface CookieSessionStoreOptions {
     path?: string;
-    sameSite?: string;
+    sameSite?: 'Lax' | 'Strict' | 'None';
 }
 
 export default class CookieSessionStore implements SessionStore {
