@@ -1,6 +1,6 @@
 import { Credentials, SessionStore } from './types';
 import SessionManager from './SessionManager';
-import CookieSessionStore from "./CookieSessionStore";
+import CookieSessionStore, { CookieSessionStoreOptions } from "./CookieSessionStore";
 import MemorySessionStore from './MemorySessionStore';
 import LocalStorageSessionStore, {localStorageSupported} from "./LocalStorageSessionStore";
 import * as API from './api';
@@ -18,8 +18,8 @@ export function importSession(): Promise<void> {
   return manager.refresh();
 }
 
-export function setCookieStore(sessionName: string): void {
-  setStore(new CookieSessionStore(sessionName));
+export function setCookieStore(sessionName: string, opts?: CookieSessionStoreOptions): void {
+  setStore(new CookieSessionStore(sessionName, opts));
 }
 
 export function setLocalStorageStore(sessionName: string): void {

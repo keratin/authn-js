@@ -1,13 +1,22 @@
 import { SessionStore } from "./types";
-import JWTSession from "./JWTSession";
+
+export interface CookieSessionStoreOptions {
+    path?: string;
+    sameSite?: 'Lax' | 'Strict' | 'None';
+}
 
 export default class CookieSessionStore implements SessionStore {
   private readonly sessionName: string;
   private readonly secureFlag: string;
+  private readonly path: string;
+  private readonly sameSite: string;
 
-  constructor(cookieName: string) {
+  constructor(cookieName: string, opts: CookieSessionStoreOptions = {}) {
     this.sessionName = cookieName;
     this.secureFlag = (window.location.protocol === 'https:') ? '; secure' : '';
+    this.path = !!opts.path ? `; path=${opts.path}` : '';
+    this.sameSite = !!opts.sameSite ? `; SameSite=${opts.sameSite}` : '';
+
   }
 
   read(): string | undefined {
@@ -15,7 +24,7 @@ export default class CookieSessionStore implements SessionStore {
   }
 
   update(val: string) {
-    document.cookie = `${this.sessionName}=${val}${this.secureFlag}`;
+    document.cookie = `${this.sessionName}=${val}${this.secureFlag}${this.path}${this.sameSite}`;
   }
 
   delete() {
