@@ -4,6 +4,8 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+## 1.3.0
+
 ### Added
 
 * support for path and sameSite settings on cookie store [#35]
