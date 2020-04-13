@@ -261,6 +261,21 @@ QUnit.test("failure", function(assert) {
     });
 });
 
+QUnit.test("Non JSON XHR response", function(assert) {
+  this.server.respondWith('POST', 'https://authn.example.com/session',
+    'Origin is not a trusted host.'
+  );
+
+  const expectedError = "HTTP response 'Origin is not a trusted host.' is not JSON as expected: SyntaxError: " +
+    "JSON.parse: unexpected character at line 1 column 1 of the JSON data"
+
+  return KeratinAuthN.login({username: 'test', password: 'test'})
+    .then(refuteSuccess(assert))
+    .catch(function(errors) {
+      assert.deepEqual(errors, [{message: expectedError}]);
+    });
+});
+
 QUnit.module("requestPasswordReset", startServer);
 QUnit.test("success or failure", function(assert) {
   this.server.respondWith('GET', 'https://authn.example.com/password/reset?username=test', '');
