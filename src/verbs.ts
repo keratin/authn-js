@@ -32,7 +32,7 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
         const data: {result?: T, errors?: KeratinError[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
 
         if (data.result) {

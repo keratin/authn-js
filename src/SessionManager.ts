@@ -5,7 +5,7 @@ import JWTSession from "./JWTSession";
 export default class SessionManager {
   private store: SessionStore | undefined;
   private refreshAt: number | undefined;
-  private timeoutID: number | undefined;
+  private timeoutID: ReturnType<typeof setTimeout> | undefined;
 
   // immediately hook into visibility changes. strange things can happen to timeouts while a device
   // is asleep, so we want to reset them.
