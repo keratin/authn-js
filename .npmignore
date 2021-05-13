@@ -2,7 +2,6 @@ src/
 test/
 lib/
 CODE_OF_CONDUCT.md
-gulpfile.js
 tsconfig.json
 yarn.lock
 .travis.yml
