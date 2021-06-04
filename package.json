@@ -21,10 +21,11 @@
   },
   "scripts": {
     "release": "yarn problems && yarn test && yarn build && yarn publish",
-    "problems": "yarn tsc --noEmit",
-    "build": "yarn clean && yarn compile && rollup -c && cp lib/*.d.ts dist",
+    "problems": "yarn typecheck",
+    "typecheck": "tsc --noEmit",
     "test": "yarn jest",
-    "compile": "yarn tsc",
-    "clean": "rm -rf dist"
+    "build": "yarn clean && yarn compile && rollup -c && cp lib/*.d.ts dist",
+    "clean": "rm -rf dist",
+    "compile": "yarn tsc"
   }
 }

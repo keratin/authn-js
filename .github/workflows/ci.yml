@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: egordm/gha-yarn-node-cache@v1
+
+      - name: Install node modules
+        run: yarn install
+
+      - name: Check types
+        run: yarn typecheck
+
+      - name: Run tests
+        run: yarn test
