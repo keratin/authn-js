@@ -54,6 +54,7 @@ export default class SessionManager {
 
   // restoreSession runs an immediate token refresh and fulfills a promise if the session looks
   // alive. note that this is no guarantee, because of potentially bad client clocks.
+  // TODO: change API to return a boolean and only reject in exceptional situations
   restoreSession(): Promise<void> {
     return new Promise<void>((fulfill, reject) => {
       // configuration error
@@ -113,7 +114,16 @@ export default class SessionManager {
     }
     if (this.refreshAt) {
       this.timeoutID = setTimeout(
-        () => this.refresh(),
+        () => this.refresh()
+          .catch((errors) => {
+            // these errors have already been handled and are only propagating from `refresh` to
+            // keep its contract with restoreSession, which depends on rejecting to indicate there
+            // is no session.
+            if (errors[0] && errors[0].message === 'Unauthorized') {
+              return;
+            }
+            throw errors;
+          }),
         this.refreshAt - Date.now()
       );
     }

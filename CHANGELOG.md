@@ -7,6 +7,7 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 * fix incorrect "connection failed" failure message
+* fix uncaught exceptions from scheduled refreshes
 
 ## 1.3.0
 
