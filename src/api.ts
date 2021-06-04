@@ -19,7 +19,7 @@ interface TokenResponse{
 
 export function signup(credentials: Credentials): Promise<string> {
   return new Promise((
-    fulfill: (data?: string) => any,
+    fulfill: (data: string) => any,
     reject: (errors: KeratinError[]) => any
   ) => {
     if (inflight) {
@@ -67,8 +67,8 @@ export function logout(): Promise<void> {
   return del<void>(url('/session'));
 }
 
-export function requestPasswordReset(username: string): Promise<{}> {
-  return get(url('/password/reset'), {username});
+export function requestPasswordReset(username: string): Promise<void> {
+  return get<void>(url('/password/reset'), {username});
 }
 
 export function changePassword(args: {password: string, currentPassword: string}): Promise<string> {
@@ -81,8 +81,8 @@ export function resetPassword(args: {password: string, token: string}): Promise<
     .then((result) => result.id_token);
 }
 
-export function requestSessionToken(username: string): Promise<{}> {
-  return get(url('/session/token'), {username});
+export function requestSessionToken(username: string): Promise<void> {
+  return get<void>(url('/session/token'), {username});
 }
 
 export function sessionTokenLogin(credentials: {token: string}): Promise<string> {

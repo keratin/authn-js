@@ -26,26 +26,21 @@ export function post<T>(url: string, data: StringMap): Promise<T> {
 
 function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
   return new Promise((
-    fulfill: (data?: T) => any,
+    fulfill: (data: T) => any,
     reject: (errors: KeratinError[]) => any
   ) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true; // enable authentication server cookies
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE) {
-        const data: {result?: T, errors?: KeratinError[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
+        const data: {result: T} | {errors: KeratinError[]} = (xhr.responseText.length > 1) ? JSON.parse(xhr.responseText) : {};
 
-        if (data.result) {
-          fulfill(data.result);
-        } else if (data.errors) {
-          reject(data.errors);
-        } else if (xhr.status >= 200 && xhr.status < 400) {
-          fulfill()
+        if ('errors' in data) {
+          reject(data.errors)
+        } else if (xhr.status > 400) {
+          reject([{message: xhr.statusText || "connection failed"}])
         } else {
-          reject([{
-            // http://stackoverflow.com/questions/872206/http-status-code-0-what-does-this-mean-in-ms-xmlhttp#14507670
-            message: xhr.statusText === '' ? 'connection failed' : xhr.statusText
-          }]);
+          fulfill(data.result)
         }
       }
     };

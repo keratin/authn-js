@@ -9,7 +9,6 @@
   "license": "LGPL-3.0",
   "dependencies": {},
   "devDependencies": {
-    "@types/es6-promise": "^0.0.32",
     "@types/jest": "^26.0.23",
     "jest": "^27.0.4",
     "msw": "^0.28.2",
@@ -17,7 +16,7 @@
     "rollup-plugin-filesize": "^1.4.2",
     "rollup-plugin-uglify": "^2.0.1",
     "ts-jest": "^27.0.2",
-    "typescript": "^3.8.3"
+    "typescript": "^4.3.2"
   },
   "scripts": {
     "release": "yarn problems && yarn test && yarn build && yarn publish",

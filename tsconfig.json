@@ -7,7 +7,9 @@
     "module": "es2015",
     "declaration": true,
     "outDir": "lib/",
+
     "esModuleInterop": true,
+    "moduleResolution": "node",
 
     "noImplicitAny": true,
     "strictNullChecks": true,
