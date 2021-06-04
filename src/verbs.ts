@@ -38,7 +38,8 @@ function jhr<T>(sender: (xhr: XMLHttpRequest) => void): Promise<T> {
         if ('errors' in data) {
           reject(data.errors)
         } else if (xhr.status > 400) {
-          reject([{message: xhr.statusText || "connection failed"}])
+          // statusText may be missing in HTTP/2
+          reject([{message: xhr.statusText || xhr.status.toString()}])
         } else {
           fulfill(data.result)
         }

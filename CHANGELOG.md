@@ -4,6 +4,10 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+### Fixed
+
+* fix incorrect "connection failed" failure message
+
 ## 1.3.0
 
 ### Added
