@@ -1,39 +1,39 @@
-import filesize from "rollup-plugin-filesize"
-import uglify from "rollup-plugin-uglify"
+import filesize from "rollup-plugin-filesize";
+import { uglify } from "rollup-plugin-uglify";
 
 export default [
   {
     input: "./lib/index.js",
     output: {
       file: "./dist/keratin-authn.js",
-      format: "cjs"
+      format: "cjs",
     },
-    plugins: [filesize()]
+    plugins: [filesize()],
   },
   {
     input: "./lib/index.js",
     output: {
       file: "./dist/keratin-authn.umd.js",
-      format: "umd"
+      format: "umd",
+      name: "KeratinAuthN",
     },
-    name: "KeratinAuthN",
-    plugins: []
+    plugins: [],
   },
   {
     input: "./lib/index.js",
     output: {
       file: "./dist/keratin-authn.min.js",
-      format: "umd"
+      format: "umd",
+      name: "KeratinAuthN",
     },
-    name: "KeratinAuthN",
-    plugins: [uglify(), filesize()]
+    plugins: [uglify(), filesize()],
   },
   {
     input: "./lib/index.js",
     output: {
       file: "./dist/keratin-authn.module.js",
-      format: "es"
+      format: "es",
     },
-    plugins: [filesize()]
-  }
-]
+    plugins: [filesize()],
+  },
+];
