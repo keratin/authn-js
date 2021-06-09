@@ -4,6 +4,10 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+### Fixed
+
+* fix unreliable "401 Unauthorized" handling
+
 ## 1.3.1
 
 ### Fixed

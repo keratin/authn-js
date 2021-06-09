@@ -100,7 +100,7 @@ export default class SessionManager {
     return refreshAPI().then(
       (id_token) => this.update(id_token),
       (errors) => {
-        if (errors[0] && errors[0].message === 'Unauthorized') {
+        if (errors[0] && errors[0].message === '401') {
           this.endSession();
         }
         throw errors;
@@ -119,7 +119,7 @@ export default class SessionManager {
             // these errors have already been handled and are only propagating from `refresh` to
             // keep its contract with restoreSession, which depends on rejecting to indicate there
             // is no session.
-            if (errors[0] && errors[0].message === 'Unauthorized') {
+            if (errors[0] && errors[0].message === '401') {
               return;
             }
             throw errors;
