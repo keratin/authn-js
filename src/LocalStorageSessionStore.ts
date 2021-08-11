@@ -3,8 +3,10 @@ import { SessionStore } from "./types";
 export function localStorageSupported(): boolean {
   const str = "keratin-authn-test";
   try {
-    window.localStorage.setItem(str, str);
-    window.localStorage.removeItem(str);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(str, str);
+      window.localStorage.removeItem(str);
+    }
     return true;
   } catch (e) {
     return false;
@@ -19,14 +21,20 @@ export default class LocalStorageSessionStore implements SessionStore {
   }
 
   read(): string | undefined {
-    return window.localStorage.getItem(this.sessionName) || undefined;
+    if (typeof window !== "undefined") {
+      return window.localStorage.getItem(this.sessionName) || undefined;
+    }
   }
 
   update(val: string) {
-    window.localStorage.setItem(this.sessionName, val);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(this.sessionName, val);
+    }
   }
 
   delete() {
-    window.localStorage.removeItem(this.sessionName);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(this.sessionName);
+    }
   }
 }
