@@ -12,6 +12,7 @@
     "@types/jest": "^26.0.23",
     "jest": "^27.0.4",
     "msw": "^0.28.2",
+    "prettier": "^2.3.2",
     "rollup": "^2.50.6",
     "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-uglify": "^6.0.4",
@@ -19,12 +20,14 @@
     "typescript": "^4.3.2"
   },
   "scripts": {
-    "release": "yarn problems && yarn test && yarn build && yarn publish",
-    "problems": "yarn typecheck",
-    "typecheck": "tsc --noEmit",
-    "test": "yarn jest",
     "build": "yarn clean && yarn compile && rollup -c && cp lib/*.d.ts dist",
     "clean": "rm -rf dist",
-    "compile": "yarn tsc"
+    "compile": "yarn tsc",
+    "format": "prettier -w src/*.ts",
+    "lint:format": "prettier -c src/*.ts",
+    "problems": "yarn typecheck && yarn lint:format",
+    "release": "yarn problems && yarn test && yarn build && yarn publish",
+    "test": "yarn jest",
+    "typecheck": "tsc --noEmit"
   }
 }

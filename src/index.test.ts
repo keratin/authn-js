@@ -178,9 +178,7 @@ describe("restoreSession", () => {
       )
     );
 
-    await expect(AuthN.restoreSession()).rejects.toEqual([
-      { message: "401" },
-    ]);
+    await expect(AuthN.restoreSession()).rejects.toEqual([{ message: "401" }]);
     expect(AuthN.session()).toBeFalsy();
   });
 
@@ -208,9 +206,7 @@ describe("restoreSession", () => {
       )
     );
 
-    await expect(AuthN.restoreSession()).rejects.toEqual([
-      { message: "401" },
-    ]);
+    await expect(AuthN.restoreSession()).rejects.toEqual([{ message: "401" }]);
     expect(AuthN.session()).toBeFalsy();
   });
 

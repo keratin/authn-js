@@ -1,9 +1,13 @@
-import { Credentials, SessionStore } from './types';
-import SessionManager from './SessionManager';
-import CookieSessionStore, { CookieSessionStoreOptions } from "./CookieSessionStore";
-import MemorySessionStore from './MemorySessionStore';
-import LocalStorageSessionStore, {localStorageSupported} from "./LocalStorageSessionStore";
-import * as API from './api';
+import { Credentials, SessionStore } from "./types";
+import SessionManager from "./SessionManager";
+import CookieSessionStore, {
+  CookieSessionStoreOptions,
+} from "./CookieSessionStore";
+import MemorySessionStore from "./MemorySessionStore";
+import LocalStorageSessionStore, {
+  localStorageSupported,
+} from "./LocalStorageSessionStore";
+import * as API from "./api";
 
 let manager = new SessionManager();
 function setStore(store: SessionStore): void {
@@ -18,14 +22,17 @@ export function importSession(): Promise<void> {
   return manager.refresh();
 }
 
-export function setCookieStore(sessionName: string, opts?: CookieSessionStoreOptions): void {
+export function setCookieStore(
+  sessionName: string,
+  opts?: CookieSessionStoreOptions
+): void {
   setStore(new CookieSessionStore(sessionName, opts));
 }
 
 export function setLocalStorageStore(sessionName: string): void {
-  localStorageSupported() ?
-    setStore(new LocalStorageSessionStore(sessionName)) :
-    setStore(new MemorySessionStore);
+  localStorageSupported()
+    ? setStore(new LocalStorageSessionStore(sessionName))
+    : setStore(new MemorySessionStore());
 }
 
 export function session(): string | undefined {
@@ -33,33 +40,33 @@ export function session(): string | undefined {
 }
 
 export function signup(credentials: Credentials): Promise<void> {
-  return API.signup(credentials)
-    .then((token) => manager.update(token));
+  return API.signup(credentials).then((token) => manager.update(token));
 }
 
 export function login(credentials: Credentials): Promise<void> {
-  return API.login(credentials)
-    .then((token) => manager.update(token));
+  return API.login(credentials).then((token) => manager.update(token));
 }
 
 export function logout(): Promise<void> {
-  return API.logout()
-    .then(() => manager.endSession());
+  return API.logout().then(() => manager.endSession());
 }
 
-export function changePassword(args: {password: string, currentPassword: string}): Promise<void> {
-  return API.changePassword(args)
-    .then((token) => manager.update(token));
+export function changePassword(args: {
+  password: string;
+  currentPassword: string;
+}): Promise<void> {
+  return API.changePassword(args).then((token) => manager.update(token));
 }
 
-export function resetPassword(args: {password: string, token: string}): Promise<void> {
-  return API.resetPassword(args)
-    .then((token) => manager.update(token));
+export function resetPassword(args: {
+  password: string;
+  token: string;
+}): Promise<void> {
+  return API.resetPassword(args).then((token) => manager.update(token));
 }
 
-export function sessionTokenLogin(args: {token: string}): Promise<void> {
-  return API.sessionTokenLogin(args)
-    .then((token) => manager.update(token));
+export function sessionTokenLogin(args: { token: string }): Promise<void> {
+  return API.sessionTokenLogin(args).then((token) => manager.update(token));
 }
 
 // export remaining API methods unmodified

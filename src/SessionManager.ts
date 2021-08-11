@@ -10,11 +10,11 @@ export default class SessionManager {
   // immediately hook into visibility changes. strange things can happen to timeouts while a device
   // is asleep, so we want to reset them.
   constructor() {
-    if (typeof document !== 'undefined') {
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
           this.scheduleRefresh();
-        };
+        }
       });
     }
   }
@@ -33,7 +33,9 @@ export default class SessionManager {
 
   // write to the store
   update(id_token: string): void {
-    if (!this.store) { return; }
+    if (!this.store) {
+      return;
+    }
     this.store.update(id_token);
 
     const session = new JWTSession(id_token);
@@ -59,24 +61,24 @@ export default class SessionManager {
     return new Promise<void>((fulfill, reject) => {
       // configuration error
       if (!this.store) {
-        reject('No session storage available.');
+        reject("No session storage available.");
         return;
       }
 
       // nothing to restore
       const token = this.sessionToken();
       if (!token) {
-        reject('No session.');
+        reject("No session.");
         return;
       }
 
       const now = Date.now(); // in ms
       const session = new JWTSession(token);
-      const refreshAt = (session.iat() + session.halflife());
+      const refreshAt = session.iat() + session.halflife();
 
       if (isNaN(refreshAt)) {
         this.store.delete();
-        reject('Malformed JWT: can not calculate refreshAt');
+        reject("Malformed JWT: can not calculate refreshAt");
         return;
       }
 
@@ -100,7 +102,7 @@ export default class SessionManager {
     return refreshAPI().then(
       (id_token) => this.update(id_token),
       (errors) => {
-        if (errors[0] && errors[0].message === '401') {
+        if (errors[0] && errors[0].message === "401") {
           this.endSession();
         }
         throw errors;
@@ -114,12 +116,12 @@ export default class SessionManager {
     }
     if (this.refreshAt) {
       this.timeoutID = setTimeout(
-        () => this.refresh()
-          .catch((errors) => {
+        () =>
+          this.refresh().catch((errors) => {
             // these errors have already been handled and are only propagating from `refresh` to
             // keep its contract with restoreSession, which depends on rejecting to indicate there
             // is no session.
-            if (errors[0] && errors[0].message === '401') {
+            if (errors[0] && errors[0].message === "401") {
               return;
             }
             throw errors;
