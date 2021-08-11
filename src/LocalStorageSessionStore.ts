@@ -1,7 +1,7 @@
 import { SessionStore } from "./types";
 
 export function localStorageSupported(): boolean {
-  const str = 'keratin-authn-test';
+  const str = "keratin-authn-test";
   try {
     window.localStorage.setItem(str, str);
     window.localStorage.removeItem(str);
