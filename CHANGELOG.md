@@ -4,6 +4,14 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+## 1.3.3
+
+### Fixed
+
+* window references during server-side rendering [#42]
+
+## 1.3.2
+
 ### Fixed
 
 * fix unreliable "401 Unauthorized" handling
