@@ -7,7 +7,7 @@ export default class MemorySessionStore implements SessionStore {
     return this.session;
   }
 
-  update(val: string) {
+  update(val: string, exp: number | undefined) {
     this.session = val;
   }
 

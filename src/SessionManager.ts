@@ -36,9 +36,8 @@ export default class SessionManager {
     if (!this.store) {
       return;
     }
-    this.store.update(id_token);
-
     const session = new JWTSession(id_token);
+    this.store.update(id_token, session.exp());
     this.refreshAt = Date.now() + session.halflife();
     this.scheduleRefresh();
   }

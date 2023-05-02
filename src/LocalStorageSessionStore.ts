@@ -26,7 +26,7 @@ export default class LocalStorageSessionStore implements SessionStore {
     }
   }
 
-  update(val: string) {
+  update(val: string, exp: number | undefined) {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(this.sessionName, val);
     }
