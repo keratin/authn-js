@@ -32,7 +32,7 @@ export declare class Session {
 
 export interface SessionStore {
   read(): string | undefined;
-  update(val: string): void;
+  update(val: string, exp: number | undefined): void;
   delete(): void;
 }
 
