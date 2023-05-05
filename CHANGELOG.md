@@ -4,6 +4,10 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+## 1.4.0
+
+- support for explicit expiration in CookieSessionStore [#55]
+
 ## 1.3.4
 
 - update dependencies
