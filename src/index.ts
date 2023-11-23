@@ -1,4 +1,4 @@
-import { Credentials, SessionStore } from "./types";
+import { Credentials, SessionStore, OtpData } from "./types";
 import SessionManager from "./SessionManager";
 import CookieSessionStore, {
   CookieSessionStoreOptions,
@@ -75,4 +75,7 @@ export {
   isAvailable,
   requestPasswordReset,
   requestSessionToken,
+  newTOTP,
+  confirmTOTP,
+  deleteTOTP,
 } from "./api";
