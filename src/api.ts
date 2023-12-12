@@ -105,24 +105,20 @@ export function sessionTokenLogin(credentials: {
   );
 }
 
-export function newTOTP() : Promise<OtpData> {
-  return post<OtpData>(url("/totp/new"), {}).then(
-      (result: OtpData) => result
-  )
+export function newTOTP(): Promise<OtpData> {
+  return post<OtpData>(url("/totp/new"), {}).then((result: OtpData) => result);
 }
 
-export function confirmTOTP(req: {
-  otp: string;
-}) : Promise<boolean> {
+export function confirmTOTP(req: { otp: string }): Promise<boolean> {
   return post<void>(url("/totp/confirm"), req)
-      .then(() => true)
-      .catch(() => false);
+    .then(() => true)
+    .catch(() => false);
 }
 
-export function deleteTOTP() : Promise<boolean> {
+export function deleteTOTP(): Promise<boolean> {
   return del<void>(url("/totp"))
-      .then(() => true)
-      .catch(() => false);
+    .then(() => true)
+    .catch(() => false);
 }
 
 function url(path: string): string {
