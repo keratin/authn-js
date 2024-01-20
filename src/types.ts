@@ -1,7 +1,7 @@
 export interface Credentials {
-  [index: string]: string;
+  [index: string]: string | undefined;
   username: string;
-  otp: string;
+  otp?: string;
   password: string;
 }
 
