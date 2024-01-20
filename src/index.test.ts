@@ -253,6 +253,22 @@ describe("login", () => {
     expect(readCookie("authn")).toEqual(token);
   });
 
+  test("success OTP", async () => {
+    server.use(
+      rest.post(
+        "https://authn.example.com/session",
+        resultResolver({ id_token: idToken({ age: 1 }) })
+      )
+    );
+
+    await AuthN.login({ username: "test", password: "test", otp: "555667" });
+
+    const token = AuthN.session();
+    expect(token!.length).toBeGreaterThan(0);
+    expect(token!.split(".")).toHaveLength(3);
+    expect(readCookie("authn")).toEqual(token);
+  });
+
   test("failure", async () => {
     server.use(
       rest.post(
@@ -414,5 +430,95 @@ describe("sessionTokenLogin", () => {
         token: jwt({ foo: "bar" }),
       })
     ).rejects.toEqual([{ field: "foo", message: "bar" }]);
+  });
+});
+
+describe("totp", () => {
+  describe("newTOTP", () => {
+    test("success", async () => {
+      server.use(
+        rest.post(
+          "https://authn.example.com/totp/new",
+          resultResolver({ otp: "55567", secret: "xxx" })
+        )
+      );
+
+      const res = await AuthN.newTOTP();
+
+      expect(res).toEqual({ otp: "55567", secret: "xxx" });
+    });
+
+    test("failure", async () => {
+      server.use(
+        rest.post(
+          "https://authn.example.com/totp/new",
+          errorsResolver({ foo: "bar" })
+        )
+      );
+
+      await expect(AuthN.newTOTP()).rejects.toEqual([
+        { field: "foo", message: "bar" },
+      ]);
+    });
+  });
+
+  describe("confirmTOTP", () => {
+    test("success", async () => {
+      server.use(
+        rest.post(
+          "https://authn.example.com/totp/confirm",
+          resultResolver(undefined)
+        )
+      );
+
+      const res = await AuthN.confirmTOTP({
+        otp: "555667",
+      });
+
+      expect(res).toBe(true);
+    });
+
+    test("failure", async () => {
+      server.use(
+        rest.post(
+          "https://authn.example.com/totp/confirm",
+          errorsResolver({ foo: "bar" })
+        )
+      );
+
+      const res = await AuthN.confirmTOTP({
+        otp: "555667",
+      });
+
+      expect(res).toEqual(false);
+    });
+
+    describe("deleteTOTP", () => {
+      test("success", async () => {
+        server.use(
+          rest.delete(
+            "https://authn.example.com/totp",
+            resultResolver(undefined)
+          )
+        );
+
+        const res = await AuthN.deleteTOTP();
+
+        expect(res).toBe(true);
+      });
+
+      test("failure", async () => {
+        server.use(
+          rest.delete(
+            "https://authn.example.com/totp",
+            errorsResolver({ foo: "bar" })
+          )
+        );
+
+        const res = await AuthN.deleteTOTP();
+
+        expect(res).toEqual(false);
+      });
+    });
   });
 });
