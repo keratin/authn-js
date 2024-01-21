@@ -90,7 +90,7 @@ KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>
 ```javascript
 // Returns a Promise that is fulfilled when a successful login has established a session.
 // May error with generic validation failures.
-// OTP is only used in v1.18 and forward.
+// OTP is only used by authn-server v1.18 and forward.
 KeratinAuthN.login(obj: {username: string, password: string, otp?: string}): Promise<void>
 ```
 
@@ -137,7 +137,8 @@ KeratinAuthN.requestSessionToken(username: string): Promise<>
 // Establishes a session with the session token.
 // May error with invalid/expired tokens, or if a login (username/password) is made after request the
 // token.
-KeratinAuthN.sessionTokenLogin(obj: {token: string}): Promise<void>
+// OTP is only used by authn-server v1.18 and forward.
+KeratinAuthN.sessionTokenLogin(obj: {token: string, otp?: string}): Promise<void>
 ```
 
 ```javascript

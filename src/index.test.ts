@@ -417,6 +417,22 @@ describe("sessionTokenLogin", () => {
     expect(readCookie("authn")).toEqual(token);
   });
 
+  test("success OTP", async () => {
+    server.use(
+      rest.post(
+        "https://authn.example.com/session/token",
+        resultResolver({ id_token: idToken({ age: 1 }) })
+      )
+    );
+
+    await AuthN.sessionTokenLogin({ token: "test", otp: "556677" });
+
+    const token = AuthN.session();
+    expect(token!.length).toBeGreaterThan(0);
+    expect(token!.split(".")).toHaveLength(3);
+    expect(readCookie("authn")).toEqual(token);
+  });
+
   test("failure", async () => {
     server.use(
       rest.post(

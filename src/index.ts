@@ -65,7 +65,10 @@ export function resetPassword(args: {
   return API.resetPassword(args).then((token) => manager.update(token));
 }
 
-export function sessionTokenLogin(args: { token: string }): Promise<void> {
+export function sessionTokenLogin(args: {
+  token: string;
+  otp?: string;
+}): Promise<void> {
   return API.sessionTokenLogin(args).then((token) => manager.update(token));
 }
 
