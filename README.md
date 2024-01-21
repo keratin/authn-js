@@ -91,7 +91,7 @@ KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>
 // Returns a Promise that is fulfilled when a successful login has established a session.
 // May error with generic validation failures.
 // OTP is only used in v1.18 and forward.
-KeratinAuthN.login(obj: {username: string, password: string, otp: string}): Promise<void>
+KeratinAuthN.login(obj: {username: string, password: string, otp?: string}): Promise<void>
 ```
 
 ```javascript
