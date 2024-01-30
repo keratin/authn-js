@@ -4,6 +4,11 @@ Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## HEAD
 
+## 1.4.1
+- Update semver from 6.3.0 to 6.3.1 (#57)
+- Update word-wrap from 1.2.3 to 1.2.5 (#62)
+- Update babel/traverse from 7.14.2 to 7.23.6 (#61)
+
 ## 1.4.0
 
 - support for explicit expiration in CookieSessionStore [#55]
