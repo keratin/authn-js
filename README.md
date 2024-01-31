@@ -90,7 +90,8 @@ KeratinAuthN.signup(obj: {username: string, password: string}): Promise<void>
 ```javascript
 // Returns a Promise that is fulfilled when a successful login has established a session.
 // May error with generic validation failures.
-KeratinAuthN.login(obj: {username: string, password: string}): Promise<void>
+// OTP is only used by authn-server v1.18 and forward.
+KeratinAuthN.login(obj: {username: string, password: string, otp?: string}): Promise<void>
 ```
 
 ```javascript
@@ -136,7 +137,27 @@ KeratinAuthN.requestSessionToken(username: string): Promise<>
 // Establishes a session with the session token.
 // May error with invalid/expired tokens, or if a login (username/password) is made after request the
 // token.
-KeratinAuthN.sessionTokenLogin(obj: {token: string}): Promise<void>
+// OTP is only used by authn-server v1.18 and forward.
+KeratinAuthN.sessionTokenLogin(obj: {token: string, otp?: string}): Promise<void>
+```
+
+```javascript
+// Creates a new TOTP code for the logged in user.  Returns an object containing the raw secret and 
+// TOTP onboarding URL.
+// Only available in authn-server v1.18 and forward.
+KeratinAuthN.newTOTP(obj: {token: string}): Promise<OtpData>
+```
+
+```javascript
+// Confirms a pending TOTP code for the authenticated user.
+// Only available in authn-server v1.18 and forward.
+KeratinAuthN.confirmTOTP(obj: {otp: string}): Promise<boolean>
+```
+
+```javascript
+// Deletes a confirmed TOTP code for the authenticated user.
+// Only available in authn-server v1.18 and forward.
+KeratinAuthN.deleteTOTP(): Promise<boolean>
 ```
 
 ## Development

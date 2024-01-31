@@ -1,4 +1,4 @@
-import { Credentials, SessionStore } from "./types";
+import { Credentials, SessionStore, OtpData } from "./types";
 import SessionManager from "./SessionManager";
 import CookieSessionStore, {
   CookieSessionStoreOptions,
@@ -65,7 +65,10 @@ export function resetPassword(args: {
   return API.resetPassword(args).then((token) => manager.update(token));
 }
 
-export function sessionTokenLogin(args: { token: string }): Promise<void> {
+export function sessionTokenLogin(args: {
+  token: string;
+  otp?: string;
+}): Promise<void> {
   return API.sessionTokenLogin(args).then((token) => manager.update(token));
 }
 
@@ -75,4 +78,7 @@ export {
   isAvailable,
   requestPasswordReset,
   requestSessionToken,
+  newTOTP,
+  confirmTOTP,
+  deleteTOTP,
 } from "./api";

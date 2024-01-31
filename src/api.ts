@@ -2,7 +2,7 @@
  * Bare API methods have no local side effects (unless you count debouncing).
  */
 
-import { Credentials, KeratinError } from "./types";
+import { Credentials, KeratinError, OtpData } from "./types";
 import { get, post, del } from "./verbs";
 
 // TODO: extract debouncing
@@ -103,6 +103,22 @@ export function sessionTokenLogin(credentials: {
   return post<TokenResponse>(url("/session/token"), credentials).then(
     (result) => result.id_token
   );
+}
+
+export function newTOTP(): Promise<OtpData> {
+  return post<OtpData>(url("/totp/new"), {}).then((result: OtpData) => result);
+}
+
+export function confirmTOTP(req: { otp: string }): Promise<boolean> {
+  return post<void>(url("/totp/confirm"), req)
+    .then(() => true)
+    .catch(() => false);
+}
+
+export function deleteTOTP(): Promise<boolean> {
+  return del<void>(url("/totp"))
+    .then(() => true)
+    .catch(() => false);
 }
 
 function url(path: string): string {
