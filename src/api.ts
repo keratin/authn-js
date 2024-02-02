@@ -121,6 +121,10 @@ export function deleteTOTP(): Promise<boolean> {
     .catch(() => false);
 }
 
+export function beginOAuthUrl(providerName: string): string {
+  return url(`/oauth/${providerName}`);
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";
