@@ -162,7 +162,7 @@ KeratinAuthN.deleteTOTP(): Promise<boolean>
 
 ```javascript
 // Get the begin oauth url for a specified provider.
-KeratinAuthN.beginOAuthUrl(providerName: string): string
+KeratinAuthN.beginOAuthUrl(providerName: string, redirectUri: string): string
 ```
 
 ## Development

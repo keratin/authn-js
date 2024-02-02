@@ -121,8 +121,9 @@ export function deleteTOTP(): Promise<boolean> {
     .catch(() => false);
 }
 
-export function beginOAuthUrl(providerName: string): string {
-  return url(`/oauth/${providerName}`);
+export function beginOAuthUrl(providerName: string, redirectUri: string): string {
+  let redirectUriParam = encodeURIComponent(redirectUri);
+  return url(`/oauth/${providerName}?redirect_uri=${redirectUriParam}`);
 }
 
 function url(path: string): string {
