@@ -5,133 +5,137 @@
 import { Credentials, KeratinError, OtpData } from "./types";
 import { get, post, del } from "./verbs";
 
-// TODO: extract debouncing
-let inflight: boolean = false;
-
-let ISSUER: string = "";
-export function setHost(URL: string): void {
-  ISSUER = URL.replace(/\/$/, "");
-}
-
 interface TokenResponse {
   id_token: string;
 }
 
-export function signup(credentials: Credentials): Promise<string> {
-  return new Promise(
-    (
-      fulfill: (data: string) => any,
-      reject: (errors: KeratinError[]) => any
-    ) => {
-      if (inflight) {
-        reject([{ message: "duplicate" }]);
-        return;
-      } else {
-        inflight = true;
-      }
+export default class API {
+  // TODO: extract debouncing
+  private inflight: boolean = false;
 
-      post<TokenResponse>(url("/accounts"), credentials)
-        .then(
-          (result) => fulfill(result.id_token),
-          (errors) => reject(errors)
-        )
-        .then(() => (inflight = false));
-    }
-  );
-}
+  private ISSUER: string;
 
-function isTaken(e: KeratinError) {
-  return e.field === "username" && e.message === "TAKEN";
-}
-
-export function isAvailable(username: string): Promise<boolean> {
-  return get<boolean>(url("/accounts/available"), { username })
-    .then((bool) => bool)
-    .catch((e: Error | KeratinError[]) => {
-      if (!(e instanceof Error) && e.some(isTaken)) {
-        return false;
-      }
-      throw e;
-    });
-}
-
-export function refresh(): Promise<string> {
-  return get<TokenResponse>(url("/session/refresh"), {}).then(
-    (result) => result.id_token
-  );
-}
-
-export function login(credentials: Credentials): Promise<string> {
-  return post<TokenResponse>(url("/session"), credentials).then(
-    (result) => result.id_token
-  );
-}
-
-export function logout(): Promise<void> {
-  return del<void>(url("/session"));
-}
-
-export function requestPasswordReset(username: string): Promise<void> {
-  return get<void>(url("/password/reset"), { username });
-}
-
-export function changePassword(args: {
-  password: string;
-  currentPassword: string;
-}): Promise<string> {
-  return post<TokenResponse>(url("/password"), args).then(
-    (result) => result.id_token
-  );
-}
-
-export function resetPassword(args: {
-  password: string;
-  token: string;
-}): Promise<string> {
-  return post<TokenResponse>(url("/password"), args).then(
-    (result) => result.id_token
-  );
-}
-
-export function requestSessionToken(username: string): Promise<void> {
-  return get<void>(url("/session/token"), { username });
-}
-
-export function sessionTokenLogin(credentials: {
-  token: string;
-}): Promise<string> {
-  return post<TokenResponse>(url("/session/token"), credentials).then(
-    (result) => result.id_token
-  );
-}
-
-export function newTOTP(): Promise<OtpData> {
-  return post<OtpData>(url("/totp/new"), {}).then((result: OtpData) => result);
-}
-
-export function confirmTOTP(req: { otp: string }): Promise<boolean> {
-  return post<void>(url("/totp/confirm"), req)
-    .then(() => true)
-    .catch(() => false);
-}
-
-export function deleteTOTP(): Promise<boolean> {
-  return del<void>(url("/totp"))
-    .then(() => true)
-    .catch(() => false);
-}
-
-export function beginOAuthUrl(
-  providerName: string,
-  redirectUri: string
-): string {
-  let redirectUriParam = encodeURIComponent(redirectUri);
-  return url(`/oauth/${providerName}?redirect_uri=${redirectUriParam}`);
-}
-
-function url(path: string): string {
-  if (!ISSUER.length) {
-    throw "ISSUER not set";
+  constructor(ISSUER: string) {
+    this.setHost(ISSUER);
   }
-  return `${ISSUER}${path}`;
+
+  setHost = (URL: string): void => {
+    this.ISSUER = URL.replace(/\/$/, "");
+  }
+
+  signup = (credentials: Credentials): Promise<string> => {
+    return new Promise(
+      (
+        fulfill: (data: string) => any,
+        reject: (errors: KeratinError[]) => any
+      ) => {
+        if (this.inflight) {
+          reject([{ message: "duplicate" }]);
+          return;
+        } else {
+          this.inflight = true;
+        }
+
+        post<TokenResponse>(this.url("/accounts"), credentials)
+          .then(
+            (result) => fulfill(result.id_token),
+            (errors) => reject(errors)
+          )
+          .then(() => (this.inflight = false));
+      }
+    );
+  }
+
+  isAvailable = (username: string): Promise<boolean> => {
+    return get<boolean>(this.url("/accounts/available"), { username })
+      .then((bool) => bool)
+      .catch((e: Error | KeratinError[]) => {
+        if (!(e instanceof Error) && e.some(this.isTaken)) {
+          return false;
+        }
+        throw e;
+      });
+  }
+
+  refresh = (): Promise<string> => {
+    return get<TokenResponse>(this.url("/session/refresh"), {}).then(
+      (result) => result.id_token
+    );
+  }
+
+  login = (credentials: Credentials): Promise<string> => {
+    return post<TokenResponse>(this.url("/session"), credentials).then(
+      (result) => result.id_token
+    );
+  }
+
+  logout = (): Promise<void> => {
+    return del<void>(this.url("/session"));
+  }
+
+  requestPasswordReset = (username: string): Promise<void> => {
+    return get<void>(this.url("/password/reset"), { username });
+  }
+
+  changePassword = (args: {
+    password: string;
+    currentPassword: string;
+  }): Promise<string> => {
+    return post<TokenResponse>(this.url("/password"), args).then(
+      (result) => result.id_token
+    );
+  }
+
+  resetPassword = (args: {
+    password: string;
+    token: string;
+  }): Promise<string> => {
+    return post<TokenResponse>(this.url("/password"), args).then(
+      (result) => result.id_token
+    );
+  }
+
+  requestSessionToken = (username: string): Promise<void> => {
+    return get<void>(this.url("/session/token"), { username });
+  }
+
+  sessionTokenLogin = (credentials: {
+    token: string;
+  }): Promise<string> => {
+    return post<TokenResponse>(this.url("/session/token"), credentials).then(
+      (result) => result.id_token
+    );
+  }
+
+  newTOTP = (): Promise<OtpData> => {
+    return post<OtpData>(this.url("/totp/new"), {}).then((result: OtpData) => result);
+  }
+
+  confirmTOTP = (req: { otp: string }): Promise<boolean> => {
+    return post<void>(this.url("/totp/confirm"), req)
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  deleteTOTP = (): Promise<boolean> => {
+    return del<void>(this.url("/totp"))
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  beginOAuthUrl = (providerName: string, redirectUri: string): string => {
+    let redirectUriParam = encodeURIComponent(redirectUri);
+    return this.url(`/oauth/${providerName}?redirect_uri=${redirectUriParam}`);
+  }
+
+  private url = (path: string): string => {
+    if (!this.ISSUER.length) {
+      throw "ISSUER not set";
+    }
+    return `${this.ISSUER}${path}`;
+  }
+
+  private isTaken(e: KeratinError) {
+    return e.field === "username" && e.message === "TAKEN";
+  }
 }
