@@ -81,4 +81,5 @@ export {
   newTOTP,
   confirmTOTP,
   deleteTOTP,
+  beginOAuthUrl,
 } from "./api";

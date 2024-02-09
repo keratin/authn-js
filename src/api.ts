@@ -121,6 +121,11 @@ export function deleteTOTP(): Promise<boolean> {
     .catch(() => false);
 }
 
+export function beginOAuthUrl(providerName: string, redirectUri: string): string {
+  let redirectUriParam = encodeURIComponent(redirectUri);
+  return url(`/oauth/${providerName}?redirect_uri=${redirectUriParam}`);
+}
+
 function url(path: string): string {
   if (!ISSUER.length) {
     throw "ISSUER not set";

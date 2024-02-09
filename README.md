@@ -160,6 +160,11 @@ KeratinAuthN.confirmTOTP(obj: {otp: string}): Promise<boolean>
 KeratinAuthN.deleteTOTP(): Promise<boolean>
 ```
 
+```javascript
+// Get the begin oauth url for a specified provider.
+KeratinAuthN.beginOAuthUrl(providerName: string, redirectUri: string): string
+```
+
 ## Development
 
 Embrace the TypeScript!
