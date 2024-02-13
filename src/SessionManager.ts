@@ -1,15 +1,17 @@
 import { SessionStore } from "./types";
-import { refresh as refreshAPI } from "./api";
+import API from "./api";
 import JWTSession from "./JWTSession";
 
 export default class SessionManager {
   private store: SessionStore | undefined;
   private refreshAt: number | undefined;
   private timeoutID: ReturnType<typeof setTimeout> | undefined;
+  private api: API;
 
   // immediately hook into visibility changes. strange things can happen to timeouts while a device
   // is asleep, so we want to reset them.
-  constructor() {
+  constructor(api: API) {
+    this.api = api;
     if (typeof document !== "undefined") {
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {
@@ -19,12 +21,12 @@ export default class SessionManager {
     }
   }
 
-  setStore(store: SessionStore): void {
+  setStore = (store: SessionStore): void => {
     this.store = store;
   }
 
   // read from the store
-  sessionToken(): string | undefined {
+  sessionToken = (): string | undefined => {
     if (!this.store) {
       return undefined;
     }
@@ -32,7 +34,7 @@ export default class SessionManager {
   }
 
   // write to the store
-  update(id_token: string): void {
+  update = (id_token: string): void => {
     if (!this.store) {
       return;
     }
@@ -43,7 +45,7 @@ export default class SessionManager {
   }
 
   // delete from the store
-  endSession(): void {
+  endSession = (): void => {
     this.refreshAt = undefined;
     if (this.timeoutID) {
       clearTimeout(this.timeoutID);
@@ -56,7 +58,7 @@ export default class SessionManager {
   // restoreSession runs an immediate token refresh and fulfills a promise if the session looks
   // alive. note that this is no guarantee, because of potentially bad client clocks.
   // TODO: change API to return a boolean and only reject in exceptional situations
-  restoreSession(): Promise<void> {
+  restoreSession = (): Promise<void> => {
     return new Promise<void>((fulfill, reject) => {
       // configuration error
       if (!this.store) {
@@ -97,8 +99,8 @@ export default class SessionManager {
     });
   }
 
-  refresh(): Promise<void> {
-    return refreshAPI().then(
+  refresh = (): Promise<void> => {
+    return this.api.refresh().then(
       (id_token) => this.update(id_token),
       (errors) => {
         if (errors[0] && errors[0].message === "401") {
@@ -109,7 +111,7 @@ export default class SessionManager {
     );
   }
 
-  private scheduleRefresh(): void {
+  private scheduleRefresh = (): void => {
     if (this.timeoutID) {
       clearTimeout(this.timeoutID);
     }

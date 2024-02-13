@@ -7,19 +7,13 @@ import MemorySessionStore from "./MemorySessionStore";
 import LocalStorageSessionStore, {
   localStorageSupported,
 } from "./LocalStorageSessionStore";
-import * as API from "./api";
+import API from "./api";
 
-let manager = new SessionManager();
+let api = new API("");
+let manager = new SessionManager(api);
+
 function setStore(store: SessionStore): void {
   manager.setStore(store);
-}
-
-export function restoreSession(): Promise<void> {
-  return manager.restoreSession();
-}
-
-export function importSession(): Promise<void> {
-  return manager.refresh();
 }
 
 export function setCookieStore(
@@ -35,45 +29,41 @@ export function setLocalStorageStore(sessionName: string): void {
     : setStore(new MemorySessionStore());
 }
 
-export function session(): string | undefined {
-  return manager.sessionToken();
-}
-
 export function signup(credentials: Credentials): Promise<void> {
-  return API.signup(credentials).then((token) => manager.update(token));
+  return api.signup(credentials).then((token) => manager.update(token));
 }
 
 export function login(credentials: Credentials): Promise<void> {
-  return API.login(credentials).then((token) => manager.update(token));
+  return api.login(credentials).then((token) => manager.update(token));
 }
 
 export function logout(): Promise<void> {
-  return API.logout().then(() => manager.endSession());
+  return api.logout().then(() => manager.endSession());
 }
 
 export function changePassword(args: {
   password: string;
   currentPassword: string;
 }): Promise<void> {
-  return API.changePassword(args).then((token) => manager.update(token));
+  return api.changePassword(args).then((token) => manager.update(token));
 }
 
 export function resetPassword(args: {
   password: string;
   token: string;
 }): Promise<void> {
-  return API.resetPassword(args).then((token) => manager.update(token));
+  return api.resetPassword(args).then((token) => manager.update(token));
 }
 
 export function sessionTokenLogin(args: {
   token: string;
   otp?: string;
 }): Promise<void> {
-  return API.sessionTokenLogin(args).then((token) => manager.update(token));
+  return api.sessionTokenLogin(args).then((token) => manager.update(token));
 }
 
 // export remaining API methods unmodified
-export {
+export const {
   setHost,
   isAvailable,
   requestPasswordReset,
@@ -82,4 +72,11 @@ export {
   confirmTOTP,
   deleteTOTP,
   beginOAuthUrl,
-} from "./api";
+} = api;
+
+// export remaining SessionManager methods unmodified
+export const {
+  restoreSession,
+  refresh: importSession,
+  sessionToken: session,
+} = manager;
